@@ -18,7 +18,7 @@ where $g_t = \nabla_{\theta} f_t(\theta_{t-1})$ is the current gradient, and $\b
  $$\hat{m}_t = \frac{m_t}{1-\beta_1^t}, \qquad \hat{v}_t = \frac{v_t}{1-\beta_2^t}$$
 
 The final update rule for Adam is given by:
-$$   \theta_t = \theta_{t-1} - \alpha \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}$$
+$$\theta_t = \theta_{t-1} - \alpha \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}$$
 Where $\alpha$ is the learning rate and $\epsilon$ a small constant for numerical stability​
 
 This adaptive rule results in per-parameter step sizes inversely proportional to
