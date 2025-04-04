@@ -1,0 +1,72 @@
+baseURL: https://adelbennaceur.github.io/
+languageCode: en-us
+title: Adel Bennaceur 
+theme: PaperMod
+
+
+params:
+  defaultTheme: auto
+  math: true
+  homeInfoParams:
+    Title: "Hi there \U0001F44B"
+    Content: >-
+      Hi, I'm Adel — a Computer Vision Engineer passionate about deep learning, computational photography, and computer graphics. This space is where I share my learning journey, personal projects, research insights, and notes on topics that inspire me. I hope you find something valuable here :).
+    Image: "images/profile_pic.jpeg"
+  socialIcons:
+    - name: email
+      url: 'mailto:adelbennaceur@gmail.com'
+    - name: github
+      url: 'https://github.com/adelbennaceur'
+    - name: linkedin
+      url: 'https://www.linkedin.com/in/adelbennaceur/'
+    - name: twitter
+      url: 'https://twitter.com/adel_bennaceur'
+   
+  fuseOpts:
+    isCaseSensitive: p
+    shouldSort: true
+    location: 0
+    distance: 1000
+    threshold: 0.4
+    minMatchCharLength: 0
+    # limit: 10 # refer: https://www.fusejs.io/api/methods.html#search
+    keys: ["title", "permalink", "summary", "content"]
+
+  # Enable search
+  search:
+    enable: true
+    placeholder: 'Search posts...'
+
+  # Show post word count and read time
+  ShowWordCount: true
+  ShowReadingTime: true
+
+  # Show tags at the bottom of posts
+  ShowPostNavLinks: true
+  ShowBreadCrumbs: true
+  ShowCodeCopyButtons: true
+
+
+
+menu:
+  main:
+  - identifier: home
+    name: Home
+    url: /
+    weight: 10
+  - identifier: posts
+    name: Blog
+    url: /posts/
+    weight: 20
+  - identifier: search
+    name: Search
+    url: /search/
+    weight: 30
+  - identifier: archives
+    name: Archives
+    url: /archives/
+    weight: 40
+  - identifier: tags
+    name: Tags
+    url: /tags/
+    weight: 40

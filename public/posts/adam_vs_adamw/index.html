@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Adam vs. AdamW: A (Relatively) Deep Dive into Optimizer Differences | Adel Bennaceur</title>
+<meta name="keywords" content="deep learning, optimizers, Adam, AdamW">
+<meta name="description" content="Background: Adam Optimizer Overview
+Adam (Adaptive Moment Estimation) is a popular stochastic optimizer introduced by Kingma and Ba (2014). It combines ideas from momentum and RMSProp to adapt the learning rate for each parameter. Mathematically, Adam maintains an exponentially decaying average of past gradients (first moment) and of past squared gradients (second moment). At each step $t$, for each parameter $\theta$, Adam updates these estimates as:
+
+First moment (momentum): $m_t = \beta_1 m_{t-1} &#43; (1-\beta_1)g_t$,
+Second moment (RMS): $v_t = \beta_2v_{t-1} &#43; (1-\beta_2)g_t^2$,
+
+where $g_t = \nabla_{\theta} f_t(\theta_{t-1})$ is the current gradient, and $\beta_1,\beta_2$ are decay rates (e.g. $0.9$ and $0.999$ by default). To correct the initialization bias (since $m_0=v_0=0$), bias-corrected estimates are computed:
+$$\hat{m}_t = \frac{m_t}{1-\beta_1^t}, \qquad \hat{v}_t = \frac{v_t}{1-\beta_2^t}$$">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/posts/adam_vs_adamw/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.f49d66caae9ea0fd43f21f29e71a8d3e284517ed770f2aa86fa012953ad3c9ef.css" integrity="sha256-9J1myq6eoP1D8h8p5xqNPihFF&#43;13Dyqob6ASlTrTye8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/adam_vs_adamw/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css"
+    integrity="sha384-zh0CIslj+VczCZtlzBcjt5ppRcsAmDnRem7ESsYwWwg3m/OaJ2l4x7YBZl9Kxxib" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js"
+    integrity="sha384-Rma6DA2IPUwhNxmrB/7S3Tno0YY7sFu9WSYMCuulLhIqYSGZ2gKCJWIqhBWqMQfh"
+    crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/contrib/auto-render.min.js"
+    integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv+fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh" crossorigin="anonymous" onload="renderMathInElement(document.body, 
+    {
+              delimiters: [
+                  {left: '$$', right: '$$', display: true},
+                  {left: '\\[', right: '\\]', display: true},
+                  {left: '$', right: '$', display: false},
+                  {left: '\\(', right: '\\)', display: false}
+              ]
+          }
+    );"></script>
+
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Adel Bennaceur (Alt + H)">Adel Bennaceur</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/" title="Home">
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/posts/" title="Blog">
+                    <span>Blog</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Adam vs. AdamW: A (Relatively) Deep Dive into Optimizer Differences
+    </h1>
+    <div class="post-meta"><span title='2025-04-04 00:00:00 +0000 UTC'>April 4, 2025</span>&nbsp;·&nbsp;10 min&nbsp;·&nbsp;1967 words
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#background-adam-optimizer-overview" aria-label="Background: Adam Optimizer Overview">Background: Adam Optimizer Overview</a></li>
+                <li>
+                    <a href="#weight-decay-vs-l2-regularization-in-adam" aria-label="Weight Decay vs. L2 Regularization in Adam">Weight Decay vs. L2 Regularization in Adam</a></li>
+                <li>
+                    <a href="#adamw-decoupled-weight-decay" aria-label="AdamW: Decoupled Weight Decay">AdamW: Decoupled Weight Decay</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#key-differences-between-adam-and-adamw" aria-label="Key differences between Adam and AdamW">Key differences between Adam and AdamW</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#practical-implementation-adam-and-adamw-from-scratch" aria-label="Practical Implementation: Adam and AdamW from Scratch">Practical Implementation: Adam and AdamW from Scratch</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#numpy-implementation-of-adam" aria-label="NumPy Implementation of Adam">NumPy Implementation of Adam</a></li>
+                <li>
+                    <a href="#numpy-implementation-of-adamw" aria-label="NumPy Implementation of AdamW">NumPy Implementation of AdamW</a></li>
+                <li>
+                    <a href="#pytorch-implementation-of-adamw" aria-label="PyTorch Implementation of AdamW">PyTorch Implementation of AdamW</a></li></ul>
+                    
+                <li>
+                    <a href="#verifying-the-difference-in-practice" aria-label="Verifying the Difference in Practice">Verifying the Difference in Practice</a></li></ul>
+                </li>
+                <li>
+                    <a href="#conclusion" aria-label="Conclusion">Conclusion</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="background-adam-optimizer-overview">Background: Adam Optimizer Overview<a hidden class="anchor" aria-hidden="true" href="#background-adam-optimizer-overview">#</a></h1>
+<p>Adam (Adaptive Moment Estimation) is a popular stochastic optimizer introduced by <a href="https://arxiv.org/abs/1412.6980">Kingma and Ba (2014)</a>. It combines ideas from momentum and RMSProp to adapt the learning rate for each parameter. Mathematically, Adam maintains an exponentially decaying average of past gradients (first moment) and of past squared gradients (second moment). At each step $t$, for each parameter $\theta$, Adam updates these estimates as:</p>
+<ul>
+<li><strong>First moment (momentum)</strong>: $m_t = \beta_1 m_{t-1} + (1-\beta_1)g_t$,</li>
+<li><strong>Second moment (RMS)</strong>: $v_t = \beta_2v_{t-1} + (1-\beta_2)g_t^2$,</li>
+</ul>
+<p>where $g_t = \nabla_{\theta} f_t(\theta_{t-1})$ is the current gradient, and $\beta_1,\beta_2$ are decay rates (e.g. $0.9$ and $0.999$ by default). To correct the initialization bias (since $m_0=v_0=0$), bias-corrected estimates are computed:
+$$\hat{m}_t = \frac{m_t}{1-\beta_1^t}, \qquad \hat{v}_t = \frac{v_t}{1-\beta_2^t}$$</p>
+<p>The final update rule for Adam is given by:
+$$   \theta_t = \theta_{t-1} - \alpha \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}$$
+Where $\alpha$ is the learning rate and $\epsilon$ a small constant for numerical stability​</p>
+<p>This adaptive rule results in per-parameter step sizes inversely proportional to
+the root mean square of recent gradients, making Adam invariant to gradient
+rescaling and suited for problems with noisy or sparse gradients​. Adam’s hyperparameters ($\alpha, \beta_1, \beta_2$) have intuitive interpretations and typically require little tuning​. Empirically, Adam often converges faster than stochastic gradient descent (SGD) and has been a default choice in training deep networks​.</p>
+<h1 id="weight-decay-vs-l2-regularization-in-adam">Weight Decay vs. L2 Regularization in Adam<a hidden class="anchor" aria-hidden="true" href="#weight-decay-vs-l2-regularization-in-adam">#</a></h1>
+<p>Weight decay is a regularization technique that penalizes large weights by multiplying weights by a factor (less than 1) each update, effectively &ldquo;decaying&rdquo; the weight magnitude over time. In classical SGD, applying weight decay at each step is equivalent to adding an L2 penalty $\frac{\lambda}{2}|\theta|^2$ to the loss function (with $\lambda$ appropriately scaled by the learning rate). In other words, for standard (non-adaptive) SGD, weight decay and L2 regularization are mathematically equivalent <strong>when using a constant learning rate</strong>.</p>
+<p>However, for adaptive optimizers like Adam, L2 regularization and weight decay are not equivalent​
+. In most implementations, &ldquo;weight decay&rdquo; has been applied by adding an L2 penalty term to the loss or gradient. This means the Adam update effectively incorporates the regularization gradient into $g_t$. For example, if using L2 regularization, one would add $\lambda,\theta_{t-1}$ to the gradient:</p>
+<p>$$
+g_t^{(\mathrm{L} 2)}=\nabla_\theta f_t\left(\theta_{t-1}\right)+\lambda \theta_{t-1}
+$$</p>
+<p>This approach couples the regularization with Adam&rsquo;s adaptive update: the penalty term $\lambda \theta$ gets scaled by the same factor $\frac{\alpha}{\sqrt{\hat{v}_t}+\epsilon}$ as the data gradient. Consequently, the adaptive learning rates modulate the effect of weight decay in a complex way​. As noted by <a href="https://arxiv.org/abs/1711.05101">Loshchilov and Hutter (2017)</a>, in Adam “$L_2$ regularization (often called ‘weight decay’ in implementations) is misleading” because it is not equivalent to true weight decay due to this coupling​. The practical implication is that the optimal weight decay (L2) strength in Adam is entangled with the learning rate and gradient history, making it harder to tune and sometimes hindering convergence​.</p>
+<h1 id="adamw-decoupled-weight-decay">AdamW: Decoupled Weight Decay<a hidden class="anchor" aria-hidden="true" href="#adamw-decoupled-weight-decay">#</a></h1>
+<p>AdamW (Adam with decoupled weight decay) is a modification of Adam proposed by <a href="https://arxiv.org/abs/1711.05101">Loshchilov and Hutter (2017)</a> to address the above issue​. The key idea is to decouple the weight decay step from the gradient-based update. Instead of adding $\lambda \theta$ into the gradient (which affects the moment estimates), AdamW applies weight decay directly to the weights after the Adam update. Mathematically, AdamW update can be written as:</p>
+<ul>
+<li><strong>Gradient step</strong> (Adam part): $\hat{\theta_t} = \theta_{t-1} - \alpha\frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}$ (using the gradient of the loss only, no $\lambda\theta$ term inside).</li>
+<li><strong>Weight decay step</strong>: $\theta_t = \hat{\theta_t} - \alpha\lambda\theta_{t-1}$.</li>
+</ul>
+<p>Combining these, the one-step update is often expressed as:</p>
+<p>$$
+\theta_t=\hat{\theta_t}-\alpha\frac{\hat{m}<em>t}{\sqrt{\hat{v}<em>t+\epsilon}}+\lambda \theta</em>{t-1}
+$$
+where the $\lambda\theta</em>{t-1}$ term is <strong>outside</strong> the gradient-driven part​. This decoupled formulation means the weight decay term $\lambda\theta_{t-1}$ is not subject to the adaptive scaling of $\hat{v}_t$. <strong>In other words, AdamW applies a fixed proportional shrinkage to weights each step, independently of the gradient</strong></p>
+<h3 id="key-differences-between-adam-and-adamw">Key differences between Adam and AdamW<a hidden class="anchor" aria-hidden="true" href="#key-differences-between-adam-and-adamw">#</a></h3>
+<ul>
+<li><strong>Regularization term</strong>: Adam (with &ldquo;weight decay&rdquo;) typically implemented weight decay as L2 regularization (coupled to gradients), whereas AdamW treats weight decay as a separate step. <strong>This prevents the weight decay from affecting the momentum ($m_t$) and variance ($v_t$) estimates​.</strong></li>
+<li><strong>Hyperparameter decoupling</strong>: In AdamW, the optimal weight decay coefficient can be tuned independently of the learning rate. <a href="https://arxiv.org/abs/1711.05101">Loshchilov and Hutter (2017)</a> showed that decoupling “decouples the optimal choice of weight decay factor from the setting of the learning rate”​. In regular Adam, increasing the learning rate also implicitly increases the effective weight decay strength (since $\lambda \theta$ term would be scaled by a larger step).</li>
+<li><strong>Training dynamics</strong>: Decoupled weight decay yields more consistent regularization. One study explains that <strong>AdamW does not alter the adaptive learning rates</strong>, giving a more reliable regularization effect. By contrast, in Adam the adaptive nature could cause the regularization to behave erratically across parameters or over time.</li>
+<li><strong>Convergence behavior</strong>: **Empirically, AdamW often converges to a lower loss or higher accuracy than Adam given the same hyperparameters​ . In our own small-scale experiment (described later), we observed AdamW achieving a significantly lower training loss than Adam for the same weight decay setting, underscoring that decoupling allows better optimization of the loss.</li>
+</ul>
+<hr>
+<h1 id="practical-implementation-adam-and-adamw-from-scratch">Practical Implementation: Adam and AdamW from Scratch<a hidden class="anchor" aria-hidden="true" href="#practical-implementation-adam-and-adamw-from-scratch">#</a></h1>
+<p>To solidify understanding, let&rsquo;s implement simplified versions of Adam and AdamW in Python (NumPy). This will highlight the difference in their update rules.</p>
+<h3 id="numpy-implementation-of-adam">NumPy Implementation of Adam<a hidden class="anchor" aria-hidden="true" href="#numpy-implementation-of-adam">#</a></h3>
+<p>Below is a basic implementation of the Adam optimizer. We maintain state dictionaries for the first and second moments (<code>m</code> and <code>v</code>). For simplicity, this example assumes we are updating a single parameter vector <code>theta</code> (like flattening all parameters):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">adam_update</span>(theta, grad, m, v, t, lr<span style="color:#f92672">=</span><span style="color:#ae81ff">1e-3</span>, beta1<span style="color:#f92672">=</span><span style="color:#ae81ff">0.9</span>, beta2<span style="color:#f92672">=</span><span style="color:#ae81ff">0.999</span>, eps<span style="color:#f92672">=</span><span style="color:#ae81ff">1e-8</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Update moments</span>
+</span></span><span style="display:flex;"><span>    m <span style="color:#f92672">=</span> beta1 <span style="color:#f92672">*</span> m <span style="color:#f92672">+</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">-</span> beta1) <span style="color:#f92672">*</span> grad
+</span></span><span style="display:flex;"><span>    v <span style="color:#f92672">=</span> beta2 <span style="color:#f92672">*</span> v <span style="color:#f92672">+</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">-</span> beta2) <span style="color:#f92672">*</span> (grad <span style="color:#f92672">**</span> <span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Compute bias corrected estimates</span>
+</span></span><span style="display:flex;"><span>    m_hat <span style="color:#f92672">=</span> m <span style="color:#f92672">/</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">-</span> beta1<span style="color:#f92672">**</span>t)
+</span></span><span style="display:flex;"><span>    v_hat <span style="color:#f92672">=</span> v <span style="color:#f92672">/</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">-</span> beta2<span style="color:#f92672">**</span>t)
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Update param</span>
+</span></span><span style="display:flex;"><span>    theta <span style="color:#f92672">=</span> theta <span style="color:#f92672">-</span> lr <span style="color:#f92672">*</span> m_hat <span style="color:#f92672">/</span> (np<span style="color:#f92672">.</span>sqrt(v_hat) <span style="color:#f92672">+</span> eps)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> theta, m, v
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># usage example (one step):</span>
+</span></span><span style="display:flex;"><span>theta <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array([<span style="color:#ae81ff">0.0</span>, <span style="color:#ae81ff">0.0</span>])        
+</span></span><span style="display:flex;"><span>m <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>zeros_like(theta)          
+</span></span><span style="display:flex;"><span>v <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>zeros_like(theta)          
+</span></span><span style="display:flex;"><span>t <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>grad <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array([<span style="color:#ae81ff">0.1</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">0.2</span>])       <span style="color:#75715e"># random exampel gradient</span>
+</span></span><span style="display:flex;"><span>theta, m, v <span style="color:#f92672">=</span> adam_update(theta, grad, m, v, t, lr<span style="color:#f92672">=</span><span style="color:#ae81ff">0.001</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Can you guess the output??</span>
+</span></span></code></pre></div><p>This implementation follows the original Adam update rule​. If we wanted to include weight decay in the Adam (original) way, we would modify the gradient before the moment updates, e.g. <code>grad += weight_decay * theta</code>, which would mix the regularization into the moment calculations.</p>
+<h3 id="numpy-implementation-of-adamw">NumPy Implementation of AdamW<a hidden class="anchor" aria-hidden="true" href="#numpy-implementation-of-adamw">#</a></h3>
+<p>For AdamW, we decouple the weight decay. This means we do not add the $ \lambda \theta $ term into <code>grad</code> for the moment updates. Instead, after computing the Adam step, we apply weight decay directly to <code>theta</code>. For example:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">adamw_update</span>(theta, grad, m, v, t, lr<span style="color:#f92672">=</span><span style="color:#ae81ff">1e-3</span>, beta1<span style="color:#f92672">=</span><span style="color:#ae81ff">0.9</span>, beta2<span style="color:#f92672">=</span><span style="color:#ae81ff">0.999</span>, 
+</span></span><span style="display:flex;"><span>                 weight_decay<span style="color:#f92672">=</span><span style="color:#ae81ff">0.0</span>, eps<span style="color:#f92672">=</span><span style="color:#ae81ff">1e-8</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># AdamW update: same moment updates using grad of loss only (no weight decay term added)</span>
+</span></span><span style="display:flex;"><span>    m <span style="color:#f92672">=</span> beta1 <span style="color:#f92672">*</span> m <span style="color:#f92672">+</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">-</span> beta1) <span style="color:#f92672">*</span> grad
+</span></span><span style="display:flex;"><span>    v <span style="color:#f92672">=</span> beta2 <span style="color:#f92672">*</span> v <span style="color:#f92672">+</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">-</span> beta2) <span style="color:#f92672">*</span> (grad <span style="color:#f92672">**</span> <span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span>    m_hat <span style="color:#f92672">=</span> m <span style="color:#f92672">/</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">-</span> beta1<span style="color:#f92672">**</span>t)
+</span></span><span style="display:flex;"><span>    v_hat <span style="color:#f92672">=</span> v <span style="color:#f92672">/</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">-</span> beta2<span style="color:#f92672">**</span>t)
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Gradient-based parameter update</span>
+</span></span><span style="display:flex;"><span>    theta <span style="color:#f92672">=</span> theta <span style="color:#f92672">-</span> lr <span style="color:#f92672">*</span> m_hat <span style="color:#f92672">/</span> (np<span style="color:#f92672">.</span>sqrt(v_hat) <span style="color:#f92672">+</span> eps)
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># decoupled weight decay step (do not apply to bias terms)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> weight_decay <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>        theta <span style="color:#f92672">=</span> theta <span style="color:#f92672">-</span> lr <span style="color:#f92672">*</span> weight_decay <span style="color:#f92672">*</span> theta
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> theta, m, v
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># usage example (one step):</span>
+</span></span><span style="display:flex;"><span>theta <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array([<span style="color:#ae81ff">0.0</span>, <span style="color:#ae81ff">0.0</span>])
+</span></span><span style="display:flex;"><span>m <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>zeros_like(theta); v <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>zeros_like(theta)
+</span></span><span style="display:flex;"><span>grad <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array([<span style="color:#ae81ff">0.1</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">0.2</span>])
+</span></span><span style="display:flex;"><span>theta, m, v <span style="color:#f92672">=</span> adamw_update(theta, grad, m, v, t<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>, lr<span style="color:#f92672">=</span><span style="color:#ae81ff">0.001</span>, weight_decay<span style="color:#f92672">=</span><span style="color:#ae81ff">0.01</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Can you guess the output??</span>
+</span></span></code></pre></div><p>Notice the extra step at the end: <code>theta = theta - lr * weight_decay * theta</code>. This corresponds to $\theta_t = \theta_t&rsquo; - \alpha \lambda \theta_{t-1}$ as discussed earlier. By using the previous value of <code>theta</code> in the decay term, we ensure the decay is truly decoupled (in practice, implementing <code>theta -= lr*wd*theta</code> in code uses the updated <code>theta</code> value, but since the difference is $O(lr^2)$ it is negligible; one can store a copy of the old <code>theta</code> if needed for exactness).</p>
+<h3 id="pytorch-implementation-of-adamw">PyTorch Implementation of AdamW<a hidden class="anchor" aria-hidden="true" href="#pytorch-implementation-of-adamw">#</a></h3>
+<p>Modern libraries provide AdamW out-of-the-box (e.g., <code>torch.optim.AdamW</code> in PyTorch or <code>tf.keras.optimizers.Adam(…, decay=…)</code> in TensorFlow 2.x which now supports decoupled decay). However, understanding a manual implementation can come useful (e.g., when creating a custom optimizer or during an interview!). Below is how one could implement a custom AdamW optimizer in PyTorch by subclassing Optimizer:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> torch
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> torch.optim <span style="color:#f92672">import</span> Optimizer
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CustomAdamW</span>(Optimizer):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> __init__(self, params, lr<span style="color:#f92672">=</span><span style="color:#ae81ff">1e-3</span>, betas<span style="color:#f92672">=</span>(<span style="color:#ae81ff">0.9</span>, <span style="color:#ae81ff">0.999</span>), 
+</span></span><span style="display:flex;"><span>                 weight_decay<span style="color:#f92672">=</span><span style="color:#ae81ff">0.0</span>, eps<span style="color:#f92672">=</span><span style="color:#ae81ff">1e-8</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> lr <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">0.0</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(<span style="color:#e6db74">&#34;Learning rate must be positive.&#34;</span>)
+</span></span><span style="display:flex;"><span>        defaults <span style="color:#f92672">=</span> dict(lr<span style="color:#f92672">=</span>lr, betas<span style="color:#f92672">=</span>betas, weight_decay<span style="color:#f92672">=</span>weight_decay, eps<span style="color:#f92672">=</span>eps)
+</span></span><span style="display:flex;"><span>        super()<span style="color:#f92672">.</span>__init__(params, defaults)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@torch.no_grad</span>()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">step</span>(self, closure<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>):
+</span></span><span style="display:flex;"><span>        loss <span style="color:#f92672">=</span> <span style="color:#66d9ef">None</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> closure <span style="color:#f92672">is</span> <span style="color:#f92672">not</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>            loss <span style="color:#f92672">=</span> closure()
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> group <span style="color:#f92672">in</span> self<span style="color:#f92672">.</span>param_groups:
+</span></span><span style="display:flex;"><span>            lr <span style="color:#f92672">=</span> group[<span style="color:#e6db74">&#39;lr&#39;</span>]
+</span></span><span style="display:flex;"><span>            beta1, beta2 <span style="color:#f92672">=</span> group[<span style="color:#e6db74">&#39;betas&#39;</span>]
+</span></span><span style="display:flex;"><span>            wd <span style="color:#f92672">=</span> group[<span style="color:#e6db74">&#39;weight_decay&#39;</span>]
+</span></span><span style="display:flex;"><span>            eps <span style="color:#f92672">=</span> group[<span style="color:#e6db74">&#39;eps&#39;</span>]
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> p <span style="color:#f92672">in</span> group[<span style="color:#e6db74">&#39;params&#39;</span>]:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> p<span style="color:#f92672">.</span>grad <span style="color:#f92672">is</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>                grad <span style="color:#f92672">=</span> p<span style="color:#f92672">.</span>grad<span style="color:#f92672">.</span>data
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e"># state init</span>
+</span></span><span style="display:flex;"><span>                state <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>state[p]
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> len(state) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>                    state[<span style="color:#e6db74">&#39;step&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e"># init first and second moment</span>
+</span></span><span style="display:flex;"><span>                    state[<span style="color:#e6db74">&#39;exp_avg&#39;</span>] <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>zeros_like(p<span style="color:#f92672">.</span>data)
+</span></span><span style="display:flex;"><span>                    state[<span style="color:#e6db74">&#39;exp_avg_sq&#39;</span>] <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>zeros_like(p<span style="color:#f92672">.</span>data)
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                exp_avg, exp_avg_sq <span style="color:#f92672">=</span> state[<span style="color:#e6db74">&#39;exp_avg&#39;</span>], state[<span style="color:#e6db74">&#39;exp_avg_sq&#39;</span>]
+</span></span><span style="display:flex;"><span>                state[<span style="color:#e6db74">&#39;step&#39;</span>] <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>                t <span style="color:#f92672">=</span> state[<span style="color:#e6db74">&#39;step&#39;</span>]
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e"># update biased first and second moment estimates (use inplace operations for efficiency (the _() functions))</span>
+</span></span><span style="display:flex;"><span>                exp_avg<span style="color:#f92672">.</span>mul_(beta1)<span style="color:#f92672">.</span>add_(grad, alpha<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span><span style="color:#f92672">-</span>beta1)
+</span></span><span style="display:flex;"><span>                exp_avg_sq<span style="color:#f92672">.</span>mul_(beta2)<span style="color:#f92672">.</span>addcmul_(grad, grad, value<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span><span style="color:#f92672">-</span>beta2)
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e"># compute bias-corrected moments</span>
+</span></span><span style="display:flex;"><span>                bias_corr1 <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">-</span> beta1<span style="color:#f92672">**</span>t
+</span></span><span style="display:flex;"><span>                bias_corr2 <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">-</span> beta2<span style="color:#f92672">**</span>t
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e"># compute step size</span>
+</span></span><span style="display:flex;"><span>                denom <span style="color:#f92672">=</span> (exp_avg_sq <span style="color:#f92672">/</span> bias_corr2)<span style="color:#f92672">.</span>sqrt_()<span style="color:#f92672">.</span>add_(eps)
+</span></span><span style="display:flex;"><span>                step_size <span style="color:#f92672">=</span> lr <span style="color:#f92672">/</span> bias_corr1
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e"># gradient step</span>
+</span></span><span style="display:flex;"><span>                p<span style="color:#f92672">.</span>data<span style="color:#f92672">.</span>addcdiv_(exp_avg <span style="color:#f92672">/</span> bias_corr1, denom, value<span style="color:#f92672">=-</span>step_size)
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e"># Decoupled weight decay step</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> wd <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>                    p<span style="color:#f92672">.</span>data<span style="color:#f92672">.</span>add_(p<span style="color:#f92672">.</span>data, alpha<span style="color:#f92672">=-</span>lr <span style="color:#f92672">*</span> wd)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> loss
+</span></span></code></pre></div><p>In this implementation, we perform the standard Adam update (<code>addcdiv_</code> applies $-lr * \hat{m} / (\sqrt{\hat{v}} + \epsilon)$) and then apply weight decay via <code>p.data.add_(p.data, alpha=-lr*wd)</code>. We take care not to update bias terms with weight decay (in practice, you can set <code>weight_decay=0</code> for biases by passing them as separate parameter groups). Using this custom optimizer in a training loop would look like:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>model <span style="color:#f92672">=</span> Model()
+</span></span><span style="display:flex;"><span>optimizer <span style="color:#f92672">=</span> CustomAdamW(model<span style="color:#f92672">.</span>parameters(), lr<span style="color:#f92672">=</span><span style="color:#ae81ff">1e-3</span>, weight_decay<span style="color:#f92672">=</span><span style="color:#ae81ff">1e-2</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> data, target <span style="color:#f92672">in</span> dataloader:
+</span></span><span style="display:flex;"><span>    optimizer<span style="color:#f92672">.</span>zero_grad()
+</span></span><span style="display:flex;"><span>    output <span style="color:#f92672">=</span> model(data)
+</span></span><span style="display:flex;"><span>    loss <span style="color:#f92672">=</span> loss_fn(output, target)
+</span></span><span style="display:flex;"><span>    loss<span style="color:#f92672">.</span>backward()
+</span></span><span style="display:flex;"><span>    optimizer<span style="color:#f92672">.</span>step()
+</span></span></code></pre></div><p>This should behave identically to PyTorch’s built-in <code>AdamW</code> optimizer. (Note: PyTorch’s Adam class also has a <code>weight_decay</code> parameter, but internally it implements the L2 regularization approach, not true decoupled weight decay. The AdamW class is the correct decoupled version.)</p>
+<h2 id="verifying-the-difference-in-practice">Verifying the Difference in Practice<a hidden class="anchor" aria-hidden="true" href="#verifying-the-difference-in-practice">#</a></h2>
+<p>We can test these implementations on a simple task to illustrate the difference. Consider a logistic regression on a toy binary classification dataset. We train the model using both optimizers with the same hyperparameters (including a weight decay factor) and compare outcomes:</p>
+<ul>
+<li><strong>Setup</strong>: 2D data points with a linearly separable pattern, small model (just weights and bias).</li>
+<li><strong>Hyperparams</strong>: learning rate = 0.05, weight decay = 0.1 for both, 1000 training iterations.</li>
+</ul>
+<h1 id="conclusion">Conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h1>
+<p>In summary, <strong>Adam vs. AdamW</strong> comes down to how weight decay is handled. AdamW’s decoupled weight decay has proven to be a simple yet critical improvement over Adam with L2 regularization. By not letting the regularization term interfere with the adaptive learning rates, AdamW provides more reliable hyperparameter tuning, often faster convergence, and better generalization​. The theoretical insights and empirical results from recent studies support why AdamW is now widely adopted​.</p>
+<p>For practitioners, the takeaway is clear: <strong>if you are using Adam and you need regularization, prefer AdamW (or at least ensure your optimizer separates weight decay from the momentum calculation)</strong>. Implementations are straightforward, as we demonstrated, and most frameworks have this built-in. Meanwhile, keep an eye on newer variants like AdaBelief and RAdam, which show that there is still room to refine optimization algorithms for even better performance. But when in doubt, AdamW is a safe and robust choice that merges Adam’s adaptive convenience with the principled regularization of weight decay – giving you the best of both worlds in training deep neural networks.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/deep-learning/">Deep Learning</a></li>
+      <li><a href="http://localhost:1313/tags/optimizers/">Optimizers</a></li>
+      <li><a href="http://localhost:1313/tags/adam/">Adam</a></li>
+      <li><a href="http://localhost:1313/tags/adamw/">AdamW</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="next" href="http://localhost:1313/posts/welcome_post/">
+    <span class="title">Next »</span>
+    <br>
+    <span>My first blog post</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">Adel Bennaceur</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
