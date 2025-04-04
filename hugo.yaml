@@ -14,7 +14,7 @@ params:
     Image: "images/profile_pic.jpeg"
   socialIcons:
     - name: email
-      url: 'mailto:adelbennaceur@gmail.com'
+      url: 'mailto:adelbennaceur0@gmail.com'
     - name: github
       url: 'https://github.com/adelbennaceur'
     - name: linkedin
