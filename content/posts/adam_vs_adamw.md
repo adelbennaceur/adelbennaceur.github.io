@@ -1,7 +1,7 @@
 ---
 title: "Adam vs. AdamW: A (Relatively) Deep Dive into Optimizer Differences"
 date: 2025-04-04
-draft: false
+draft: true
 ShowToc: true
 math: true
 tags: ["deep learning", "optimizers", "Adam", "AdamW"]
