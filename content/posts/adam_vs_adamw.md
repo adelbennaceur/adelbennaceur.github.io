@@ -57,7 +57,7 @@ where the $\lambda\theta_{t-1}$ term is **outside** the gradient-driven part​.
 - **Training dynamics**: Decoupled weight decay yields more consistent regularization. One study explains that **AdamW does not alter the adaptive learning rates**, giving a more reliable regularization effect. By contrast, in Adam the adaptive nature could cause the regularization to behave erratically across parameters or over time.
 - **Convergence behavior**: **Empirically, AdamW often converges to a lower loss or higher accuracy than Adam given the same hyperparameters​ . In our own small-scale experiment (described later), we observed AdamW achieving a significantly lower training loss than Adam for the same weight decay setting, underscoring that decoupling allows better optimization of the loss.
 
-*************************
+ADD
 
 # Practical Implementation: Adam and AdamW from Scratch
 
@@ -207,6 +207,8 @@ We can test these implementations on a simple task to illustrate the difference.
 
 - **Setup**: 2D data points with a linearly separable pattern, small model (just weights and bias).
 - **Hyperparams**: learning rate = 0.05, weight decay = 0.1 for both, 1000 training iterations.
+
+ADDD
 
 # Conclusion
 
