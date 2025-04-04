@@ -47,9 +47,7 @@ AdamW (Adam with decoupled weight decay) is a modification of Adam proposed by [
 
 Combining these, the one-step update is often expressed as:
 
-$$
-\theta_t=\hat{\theta_t}-\alpha\frac{\hat{m}_t}{\sqrt{\hat{v}_t+\epsilon}}+\lambda \theta_{t-1}
-$$
+$$\theta_t=\hat{\theta_t}-\alpha\frac{\hat{m}_t}{\sqrt{\hat{v}_t+\epsilon}}+\lambda \theta_{t-1}$$
 where the $\lambda\theta_{t-1}$ term is **outside** the gradient-driven part​. This decoupled formulation means the weight decay term $\lambda\theta_{t-1}$ is not subject to the adaptive scaling of $\hat{v}_t$. **In other words, AdamW applies a fixed proportional shrinkage to weights each step, independently of the gradient**
 
 ### Key differences between Adam and AdamW
