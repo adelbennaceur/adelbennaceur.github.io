@@ -12,7 +12,7 @@ I&rsquo;ll write about Adam and AdamW. it&rsquo;s always good to go back to the 
 Background: Adam Optimizer Overview
 Adam (Adaptive Moment Estimation) is a popular stochastic optimizer introduced by Kingma and Ba (2014). It combines ideas from momentum and RMSProp to adapt the learning rate for each parameter. Mathematically, Adam maintains an exponentially decaying average of past gradients (first moment) and of past squared gradients (second moment). At each step $t$, for each parameter $\theta$, Adam updates these estimates as:">
 <meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/adelbennaceur/posts/adam_vs_adamw/">
+<link rel="canonical" href="http://localhost:1313/adelbennaceur/posts/adam_vs_adamw/adam_vs_adamw/">
 <link crossorigin="anonymous" href="/adelbennaceur/assets/css/stylesheet.f49d66caae9ea0fd43f21f29e71a8d3e284517ed770f2aa86fa012953ad3c9ef.css" integrity="sha256-9J1myq6eoP1D8h8p5xqNPihFF&#43;13Dyqob6ASlTrTye8=" rel="preload stylesheet" as="style">
 <link rel="icon" href="http://localhost:1313/adelbennaceur/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/adelbennaceur/favicon-16x16.png">
@@ -21,7 +21,7 @@ Adam (Adaptive Moment Estimation) is a popular stochastic optimizer introduced b
 <link rel="mask-icon" href="http://localhost:1313/adelbennaceur/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/adelbennaceur/posts/adam_vs_adamw/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/adelbennaceur/posts/adam_vs_adamw/adam_vs_adamw/">
 <noscript>
     <style>
         #theme-toggle,
@@ -154,7 +154,7 @@ Adam (Adaptive Moment Estimation) is a popular stochastic optimizer introduced b
     <h1 class="post-title entry-hint-parent">
       Adam vs. AdamW: A Practical Deep Dive into Optimizer Differences
     </h1>
-    <div class="post-meta"><span title='2025-04-04 00:00:00 +0000 UTC'>April 4, 2025</span>&nbsp;·&nbsp;11 min&nbsp;·&nbsp;2167 words
+    <div class="post-meta"><span title='2025-04-04 00:00:00 +0000 UTC'>April 4, 2025</span>&nbsp;·&nbsp;11 min&nbsp;·&nbsp;2192 words
 
 </div>
   </header> <div class="toc">
@@ -237,13 +237,13 @@ $$</p>
 <ul>
 <li><strong>Regularization term</strong>: Adam (with &ldquo;weight decay&rdquo;) typically implemented weight decay as L2 regularization (coupled to gradients), whereas AdamW treats weight decay as a separate step. <strong>This prevents the weight decay from affecting the momentum ($m_t$) and variance ($v_t$) estimates​.</strong></li>
 <li><strong>Hyperparameter decoupling</strong>: In AdamW, the optimal weight decay coefficient can be tuned independently of the learning rate. <a href="https://arxiv.org/abs/1711.05101">Loshchilov and Hutter (2017)</a> showed that decoupling “decouples the optimal choice of weight decay factor from the setting of the learning rate”​. In regular Adam, increasing the learning rate also implicitly increases the effective weight decay strength (since $\lambda \theta$ term would be scaled by a larger step).</li>
-<li><strong>Training dynamics</strong>: Decoupled weight decay yields more consistent regularization. <strong>AdamW does not alter the adaptive learning rates</strong>, giving a more reliable regularization effect. By contrast, in Adam the adaptive nature could cause the regularization to behave erratically across parameters or over time.</li>
-<li><strong>Convergence behavior</strong>: Empirically, AdamW often converges to a lower loss or higher accuracy than Adam given the same hyperparameters​ . In our own small-scale experiment (described later), we observed AdamW achieving a lower training loss than Adam for the same weight decay setting, underscoring that decoupling allows better optimization of the loss.</li>
+<li><strong>Training dynamics</strong>: Decoupled weight decay yields more consistent regularization. One study explains that <strong>AdamW does not alter the adaptive learning rates</strong>, giving a more reliable regularization effect. By contrast, in Adam the adaptive nature could cause the regularization to behave erratically across parameters or over time.</li>
+<li><strong>Convergence behavior</strong>: **Empirically, AdamW often converges to a lower loss or higher accuracy than Adam given the same hyperparameters​ . In our own small-scale experiment (described later), we observed AdamW achieving a significantly lower training loss than Adam for the same weight decay setting, underscoring that decoupling allows better optimization of the loss.</li>
 </ul>
 <h1 id="practical-implementation-adam-and-adamw-from-scratch">Practical Implementation: Adam and AdamW from Scratch<a hidden class="anchor" aria-hidden="true" href="#practical-implementation-adam-and-adamw-from-scratch">#</a></h1>
 <p>To solidify understanding, let&rsquo;s implement simplified versions of Adam and AdamW in Python (NumPy). This will highlight the difference in their update rules.</p>
 <h3 id="numpy-implementation-of-adam">NumPy Implementation of Adam<a hidden class="anchor" aria-hidden="true" href="#numpy-implementation-of-adam">#</a></h3>
-<p>Below is a basic implementation of the Adam optimizer. For simplicity, this example assumes we are updating a single parameter vector <code>theta</code> (like flattening all parameters):</p>
+<p>Below is a basic implementation of the Adam optimizer. We maintain state dictionaries for the first and second moments (<code>m</code> and <code>v</code>). For simplicity, this example assumes we are updating a single parameter vector <code>theta</code> (like flattening all parameters):</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">adam_update</span>(
@@ -300,7 +300,7 @@ $$</p>
 </span></span><span style="display:flex;"><span>    theta_prev <span style="color:#f92672">=</span> theta<span style="color:#f92672">.</span>copy()
 </span></span><span style="display:flex;"><span>    theta <span style="color:#f92672">=</span> theta <span style="color:#f92672">-</span> lr <span style="color:#f92672">*</span> m_hat <span style="color:#f92672">/</span> (np<span style="color:#f92672">.</span>sqrt(v_hat) <span style="color:#f92672">+</span> eps)
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e"># decoupled weight decay step (do not apply to bias terms)</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> weight_decay <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> weight_decay <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>:<span style="color:#f92672">****</span>
 </span></span><span style="display:flex;"><span>        theta <span style="color:#f92672">=</span> theta <span style="color:#f92672">-</span> lr <span style="color:#f92672">*</span> weight_decay <span style="color:#f92672">*</span> theta_prev
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> theta, m, v
 </span></span><span style="display:flex;"><span>
@@ -310,7 +310,7 @@ $$</p>
 </span></span><span style="display:flex;"><span>grad <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array([<span style="color:#ae81ff">0.1</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">0.2</span>])
 </span></span><span style="display:flex;"><span>theta, m, v <span style="color:#f92672">=</span> adamw_update(theta, grad, m, v, t<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>, lr<span style="color:#f92672">=</span><span style="color:#ae81ff">0.001</span>, weight_decay<span style="color:#f92672">=</span><span style="color:#ae81ff">0.01</span>)
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># Can you guess the output??</span>
-</span></span></code></pre></div><p>Notice the extra step at the end: <code>theta = theta - lr * weight_decay * theta_prev</code>. This corresponds to $\theta_t = \hat{\theta_t} - \alpha \lambda \theta_{t-1}$ as discussed earlier. By using the previous value of <code>theta_prev</code> in the decay term, we ensure the decay is truly decoupled (in practice, implementing <code>theta -= lr*wd*theta_prev</code> in code uses the updated <code>theta</code> value, but since the difference is $O(lr^2)$ it is negligible; one can store a copy of the old <code>theta</code> if needed for exactness).</p>
+</span></span></code></pre></div><p>Notice the extra step at the end: <code>theta = theta - lr * weight_decay * theta</code>. This corresponds to $\theta_t = \theta_t&rsquo; - \alpha \lambda \theta_{t-1}$ as discussed earlier. By using the previous value of <code>theta</code> in the decay term, we ensure the decay is truly decoupled (in practice, implementing <code>theta -= lr*wd*theta</code> in code uses the updated <code>theta</code> value, but since the difference is $O(lr^2)$ it is negligible; one can store a copy of the old <code>theta</code> if needed for exactness).</p>
 <h3 id="pytorch-implementation-of-adamw">PyTorch Implementation of AdamW<a hidden class="anchor" aria-hidden="true" href="#pytorch-implementation-of-adamw">#</a></h3>
 <p>Modern libraries provide AdamW out-of-the-box (e.g., <code>torch.optim.AdamW</code> in PyTorch). However, understanding a manual implementation can come useful (e.g., when creating a custom optimizer or to prepare for an interview!). Below is how one could implement a custom AdamW optimizer in PyTorch by subclassing Optimizer:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> torch
@@ -389,28 +389,13 @@ $$</p>
 <p><strong>Hyperparams</strong>: <code>learning_rate = 0.01</code>, <code>weight_decay = 0.01</code> for both optimizers, <code>100</code> training epochs.</p>
 </li>
 </ul>
-<p>We monitor and compare the <strong>training loss curves</strong> to observe <strong>convergence speed</strong> and <strong>stability</strong>, as well as <strong>the decision boundaries</strong> to assess how each optimizer generalizes over the input space. The results are shown in the following figures:</p>
-<p><figure>
-    <img loading="lazy" src="loss_curve.png"/> <figcaption>
-            Figure 1: Training Loss Curves for Adam and AdamW.
-        </figcaption>
-</figure>
-
-<figure>
-    <img loading="lazy" src="decision_boundary_adam_vs_adamw.png"/> <figcaption>
-            Figure 2: Decision Boundaries for Adam and AdamW.
-        </figcaption>
-</figure>
-</p>
+<p>We monitor and compare the <strong>training loss curves</strong> to observe <strong>convergence speed</strong> and <strong>stability</strong>, as well as <strong>the decision boundaries</strong> to assess how each optimizer generalizes over the input space.</p>
+<p><img alt="Figure 1: Training Loss Curves for Adam and AdamW" loading="lazy" src="loss_curve.png">
+<img alt="Figure 2: Decision Boundaries for Adam and AdamW" loading="lazy" src="decision_boundary_adam_vs_adamw.png.png"></p>
 <p><strong>Adam</strong> tends to underperform when weight decay is applied, as it couples the weight decay term with its adaptive moment estimates, often leading to suboptimal regularization. In contrast, <strong>AdamW</strong> decouples weight decay from the gradient update, resulting in more regularized and cleaner decision boundaries. While both optimizers converge in terms of training loss, <strong>AdamW</strong> typically shows smoother, more stable convergence and superior generalization. This experiment illustrates why <strong>AdamW</strong> is commonly preferred in modern deep learning frameworks, particularly when regularization through weight decay is needed.</p>
-<p>You can find the code used in this experiment in the <a href="https://github.com/adelbennaceur/adam_vs_adamw">GitHub repository</a>.</p>
 <h1 id="conclusion">Conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h1>
 <p>In summary, <strong>Adam vs. AdamW</strong> comes down to how weight decay is handled. <strong>AdamW</strong>’s decoupled weight decay has proven to be a simple yet critical improvement over <strong>Adam</strong> with L2 regularization. By not letting the regularization term interfere with the adaptive learning rates, <strong>AdamW</strong> provides more reliable hyperparameter tuning, often faster convergence, and better generalization​. The theoretical insights and empirical results from recent studies support why <strong>AdamW</strong> is now widely adopted​.</p>
-<p>For practitioners, the takeaway is clear: <strong>if you are using Adam and you need regularization,
-prefer AdamW (or at least ensure your optimizer separates weight decay from the momentum calculation)</strong>.
-Implementations are straightforward, as we demonstrated, and most frameworks have this built-in. However,
-New optimizers are constantly being proposed, and their performance can vary significantly
-depending on the task.</p>
+<p>For practitioners, the takeaway is clear: <strong>if you are using Adam and you need regularization, prefer AdamW (or at least ensure your optimizer separates weight decay from the momentum calculation)</strong>. Implementations are straightforward, as we demonstrated, and most frameworks have this built-in. Meanwhile, keep an eye on newer variants like AdaBelief and RAdam, which show that there is still room to refine optimization algorithms for even better performance. But when in doubt, AdamW is a safe and robust choice that merges Adam’s adaptive convenience with the principled regularization of weight decay – giving you the best of both worlds in training deep neural networks.</p>
 
 
   </div>

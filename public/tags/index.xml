@@ -36,19 +36,5 @@
       <guid>http://localhost:1313/adelbennaceur/tags/optimizers/</guid>
       <description></description>
     </item>
-    <item>
-      <title>Introduction</title>
-      <link>http://localhost:1313/adelbennaceur/tags/introduction/</link>
-      <pubDate>Wed, 26 Mar 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/adelbennaceur/tags/introduction/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Welcome</title>
-      <link>http://localhost:1313/adelbennaceur/tags/welcome/</link>
-      <pubDate>Wed, 26 Mar 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/adelbennaceur/tags/welcome/</guid>
-      <description></description>
-    </item>
   </channel>
 </rss>

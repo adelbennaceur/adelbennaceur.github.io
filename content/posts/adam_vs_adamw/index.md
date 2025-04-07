@@ -1,11 +1,13 @@
 ---
-title: "Adam vs. AdamW: A (Relatively) Deep Dive into Optimizer Differences"
+title: "Adam vs. AdamW: A Practical Deep Dive into Optimizer Differences"
 date: 2025-04-04
-draft: true
+draft: false
 ShowToc: true
 math: true
 tags: ["deep learning", "optimizers", "Adam", "AdamW"]
 ---
+Hello! This is my first blog ever!!
+I'll write about Adam and AdamW. it's always good to go back to the basics and brush up on what's happening under the hood :), so let's get started.
 
 # Background: Adam Optimizer Overview
 
@@ -14,7 +16,7 @@ Adam (Adaptive Moment Estimation) is a popular stochastic optimizer introduced b
 - **First moment (momentum)**: $m_t = \beta_1 m_{t-1} + (1-\beta_1)g_t$,
 - **Second moment (RMS)**: $v_t = \beta_2v_{t-1} + (1-\beta_2)g_t^2$,
 
-where $g_t = \nabla_{\theta} f_t(\theta_{t-1})$ is the current gradient, and $\beta_1,\beta_2$ are decay rates (e.g. $0.9$ and $0.999$ by default). To correct the initialization bias (since $m_0=v_0=0$), bias-corrected estimates are computed:
+where $g_t = \nabla_{\theta} f_t(\theta_{t-1})$ is the current gradient, and $\beta_1,\beta_2$ are decay rates (e.g. $0.9$ and $0.999$ by default). To correct the initialization bias, bias-corrected estimates are computed:
  $$\hat{m}_t = \frac{m_t}{1-\beta_1^t}, \qquad \hat{v}_t = \frac{v_t}{1-\beta_2^t}$$
 
 The final update rule for Adam is given by:
@@ -27,10 +29,10 @@ rescaling and suited for problems with noisy or sparse gradients​. Adam’s hy
 
 # Weight Decay vs. L2 Regularization in Adam
 
-Weight decay is a regularization technique that penalizes large weights by multiplying weights by a factor (less than 1) each update, effectively "decaying" the weight magnitude over time. In classical SGD, applying weight decay at each step is equivalent to adding an L2 penalty $\frac{\lambda}{2}|\theta|^2$ to the loss function (with $\lambda$ appropriately scaled by the learning rate). In other words, for standard (non-adaptive) SGD, weight decay and L2 regularization are mathematically equivalent **when using a constant learning rate**.
+Weight decay is a regularization method that penalizes large weights by multiplying weights by a factor (less than 1) each update, effectively "decaying" the weight magnitude over time. In classical SGD, applying weight decay at each step is equivalent to adding an L2 penalty $\frac{\lambda}{2}|\theta|^2$ to the loss function (with $\lambda$ appropriately scaled by the learning rate). In other words, for standard (non-adaptive) SGD, weight decay and L2 regularization are mathematically equivalent **when using a constant learning rate**.
 
 However, for adaptive optimizers like Adam, L2 regularization and weight decay are not equivalent​
-. In most implementations, "weight decay" has been applied by adding an L2 penalty term to the loss or gradient. This means the Adam update effectively incorporates the regularization gradient into $g_t$. For example, if using L2 regularization, one would add $\lambda,\theta_{t-1}$ to the gradient:
+. In most implementations, "weight decay" has been applied by adding an L2 penalty term to the loss or gradient. This means the Adam update effectively incorporates the regularization gradient into $g_t$. For example, if using L2 regularization, one would add $\lambda\theta_{t-1}$ to the gradient:
 
 $$
 g_t^{(\mathrm{L} 2)}=\nabla_\theta f_t\left(\theta_{t-1}\right)+\lambda \theta_{t-1}
@@ -47,17 +49,18 @@ AdamW (Adam with decoupled weight decay) is a modification of Adam proposed by [
 
 Combining these, the one-step update is often expressed as:
 
-$$\theta_t=\hat{\theta_t}-\alpha\frac{\hat{m}_t}{\sqrt{\hat{v}_t+\epsilon}}+\lambda \theta_{t-1}$$
-where the $\lambda\theta_{t-1}$ term is **outside** the gradient-driven part​. This decoupled formulation means the weight decay term $\lambda\theta_{t-1}$ is not subject to the adaptive scaling of $\hat{v}_t$. **In other words, AdamW applies a fixed proportional shrinkage to weights each step, independently of the gradient**
+$$
+\theta_t = \theta_{t-1} - \alpha (\frac{\hat{m}_t}{\sqrt{\hat{v}t} + \epsilon} + \lambda \theta_{t-1})
+$$
+
+where the $\lambda \theta_{t-1}$ term is **outside** the gradient-driven part​. This decoupled formulation means the weight decay term $\lambda\theta_{t-1}$ is not subject to the adaptive scaling of $\hat{v}_t$. **In other words, AdamW applies a fixed proportional shrinkage to weights each step, independently of the gradient**
 
 ### Key differences between Adam and AdamW
 
 - **Regularization term**: Adam (with "weight decay") typically implemented weight decay as L2 regularization (coupled to gradients), whereas AdamW treats weight decay as a separate step. **This prevents the weight decay from affecting the momentum ($m_t$) and variance ($v_t$) estimates​.**
 - **Hyperparameter decoupling**: In AdamW, the optimal weight decay coefficient can be tuned independently of the learning rate. [Loshchilov and Hutter (2017)](https://arxiv.org/abs/1711.05101) showed that decoupling “decouples the optimal choice of weight decay factor from the setting of the learning rate”​. In regular Adam, increasing the learning rate also implicitly increases the effective weight decay strength (since $\lambda \theta$ term would be scaled by a larger step).
-- **Training dynamics**: Decoupled weight decay yields more consistent regularization. One study explains that **AdamW does not alter the adaptive learning rates**, giving a more reliable regularization effect. By contrast, in Adam the adaptive nature could cause the regularization to behave erratically across parameters or over time.
-- **Convergence behavior**: **Empirically, AdamW often converges to a lower loss or higher accuracy than Adam given the same hyperparameters​ . In our own small-scale experiment (described later), we observed AdamW achieving a significantly lower training loss than Adam for the same weight decay setting, underscoring that decoupling allows better optimization of the loss.
-
-ADD
+- **Training dynamics**: Decoupled weight decay yields more consistent regularization. **AdamW does not alter the adaptive learning rates**, giving a more reliable regularization effect. By contrast, in Adam the adaptive nature could cause the regularization to behave erratically across parameters or over time.
+- **Convergence behavior**: Empirically, AdamW often converges to a lower loss or higher accuracy than Adam given the same hyperparameters​ . In our own small-scale experiment (described later), we observed AdamW achieving a lower training loss than Adam for the same weight decay setting, underscoring that decoupling allows better optimization of the loss.
 
 # Practical Implementation: Adam and AdamW from Scratch
 
@@ -65,15 +68,25 @@ To solidify understanding, let's implement simplified versions of Adam and AdamW
 
 ### NumPy Implementation of Adam
 
-Below is a basic implementation of the Adam optimizer. We maintain state dictionaries for the first and second moments (`m` and `v`). For simplicity, this example assumes we are updating a single parameter vector `theta` (like flattening all parameters):
+Below is a basic implementation of the Adam optimizer. For simplicity, this example assumes we are updating a single parameter vector `theta` (like flattening all parameters):
 
 ```python
 import numpy as np
 
-def adam_update(theta, grad, m, v, t, lr=1e-3, beta1=0.9, beta2=0.999, eps=1e-8):
+def adam_update(
+    theta: np.ndarray,
+    grad: np.ndarray,
+    m: np.ndarray,
+    v: np.ndarray,
+    t: int,
+    lr: float = 1e-3,
+    beta1: float = 0.9,
+    beta2: float = 0.999,
+    eps: float = 1e-8,
+) -> tuple:
     # Update moments
     m = beta1 * m + (1 - beta1) * grad
-    v = beta2 * v + (1 - beta2) * (grad ** 2)
+    v = beta2 * v + (1 - beta2) * (grad**2)
     # Compute bias corrected estimates
     m_hat = m / (1 - beta1**t)
     v_hat = v / (1 - beta2**t)
@@ -82,9 +95,9 @@ def adam_update(theta, grad, m, v, t, lr=1e-3, beta1=0.9, beta2=0.999, eps=1e-8)
     return theta, m, v
 
 # usage example (one step):
-theta = np.array([0.0, 0.0])        
-m = np.zeros_like(theta)          
-v = np.zeros_like(theta)          
+theta = np.array([0.0, 0.0])
+m = np.zeros_like(theta)
+v = np.zeros_like(theta)
 t = 1
 grad = np.array([0.1, -0.2])       # random exampel gradient
 theta, m, v = adam_update(theta, grad, m, v, t, lr=0.001)
@@ -99,18 +112,29 @@ For AdamW, we decouple the weight decay. This means we do not add the $ \lambda 
 
 ```python
 
-def adamw_update(theta, grad, m, v, t, lr=1e-3, beta1=0.9, beta2=0.999, 
-                 weight_decay=0.0, eps=1e-8):
+def adamw_update(
+    theta: np.ndarray,
+    grad: np.ndarray,
+    m: np.ndarray,
+    v: np.ndarray,
+    t: int,
+    lr: float = 1e-3,
+    beta1: float = 0.9,
+    beta2: float = 0.999,
+    weight_decay: float = 0.0,
+    eps: float = 1e-8,
+) -> tuple:
     # AdamW update: same moment updates using grad of loss only (no weight decay term added)
     m = beta1 * m + (1 - beta1) * grad
-    v = beta2 * v + (1 - beta2) * (grad ** 2)
+    v = beta2 * v + (1 - beta2) * (grad**2)
     m_hat = m / (1 - beta1**t)
     v_hat = v / (1 - beta2**t)
     # Gradient-based parameter update
+    theta_prev = theta.copy()
     theta = theta - lr * m_hat / (np.sqrt(v_hat) + eps)
     # decoupled weight decay step (do not apply to bias terms)
     if weight_decay != 0:
-        theta = theta - lr * weight_decay * theta
+        theta = theta - lr * weight_decay * theta_prev
     return theta, m, v
 
 # usage example (one step):
@@ -121,26 +145,26 @@ theta, m, v = adamw_update(theta, grad, m, v, t=1, lr=0.001, weight_decay=0.01)
 # Can you guess the output??
 ```
 
-Notice the extra step at the end: `theta = theta - lr * weight_decay * theta`. This corresponds to $\theta_t = \theta_t' - \alpha \lambda \theta_{t-1}$ as discussed earlier. By using the previous value of `theta` in the decay term, we ensure the decay is truly decoupled (in practice, implementing `theta -= lr*wd*theta` in code uses the updated `theta` value, but since the difference is $O(lr^2)$ it is negligible; one can store a copy of the old `theta` if needed for exactness).
+Notice the extra step at the end: `theta = theta - lr * weight_decay * theta_prev`. This corresponds to $\theta_t = \hat{\theta_t} - \alpha \lambda \theta_{t-1}$ as discussed earlier. By using the previous value of `theta_prev` in the decay term, we ensure the decay is truly decoupled (in practice, implementing `theta -= lr*wd*theta_prev` in code uses the updated `theta` value, but since the difference is $O(lr^2)$ it is negligible; one can store a copy of the old `theta` if needed for exactness).
 
 ### PyTorch Implementation of AdamW
 
-Modern libraries provide AdamW out-of-the-box (e.g., `torch.optim.AdamW` in PyTorch or `tf.keras.optimizers.Adam(…, decay=…)` in TensorFlow 2.x which now supports decoupled decay). However, understanding a manual implementation can come useful (e.g., when creating a custom optimizer or during an interview!). Below is how one could implement a custom AdamW optimizer in PyTorch by subclassing Optimizer:
+Modern libraries provide AdamW out-of-the-box (e.g., `torch.optim.AdamW` in PyTorch). However, understanding a manual implementation can come useful (e.g., when creating a custom optimizer or to prepare for an interview!). Below is how one could implement a custom AdamW optimizer in PyTorch by subclassing Optimizer:
 
 ```python
 import torch
 from torch.optim import Optimizer
 
 class CustomAdamW(Optimizer):
-    def __init__(self, params, lr=1e-3, betas=(0.9, 0.999), 
-                 weight_decay=0.0, eps=1e-8):
+    def __init__(self, params, lr: float = 1e-3, betas: tuple = (0.9, 0.999),
+                 weight_decay: float = 0.0, eps: float = 1e-8):
         if lr <= 0.0:
             raise ValueError("Learning rate must be positive.")
         defaults = dict(lr=lr, betas=betas, weight_decay=weight_decay, eps=eps)
         super().__init__(params, defaults)
-        
+
     @torch.no_grad()
-    def step(self, closure=None):
+    def step(self, closure: Optional[Callable] =None) -> None:
         loss = None
         if closure is not None:
             loss = closure()
@@ -153,7 +177,7 @@ class CustomAdamW(Optimizer):
                 if p.grad is None:
                     continue
                 grad = p.grad.data
-                
+
                 # state init
                 state = self.state[p]
                 if len(state) == 0:
@@ -161,25 +185,25 @@ class CustomAdamW(Optimizer):
                     # init first and second moment
                     state['exp_avg'] = torch.zeros_like(p.data)
                     state['exp_avg_sq'] = torch.zeros_like(p.data)
-                
+
                 exp_avg, exp_avg_sq = state['exp_avg'], state['exp_avg_sq']
                 state['step'] += 1
                 t = state['step']
-                
+
                 # update biased first and second moment estimates (use inplace operations for efficiency (the _() functions))
                 exp_avg.mul_(beta1).add_(grad, alpha=1-beta1)
                 exp_avg_sq.mul_(beta2).addcmul_(grad, grad, value=1-beta2)
-                
+
                 # compute bias-corrected moments
                 bias_corr1 = 1 - beta1**t
                 bias_corr2 = 1 - beta2**t
-                
+
                 # compute step size
                 denom = (exp_avg_sq / bias_corr2).sqrt_().add_(eps)
                 step_size = lr / bias_corr1
-                
+
                 # gradient step
-                p.data.addcdiv_(exp_avg / bias_corr1, denom, value=-step_size)
+                p.data.addcdiv_(exp_avg, denom, value=-step_size)
                 # Decoupled weight decay step
                 if wd != 0:
                     p.data.add_(p.data, alpha=-lr * wd)
@@ -203,15 +227,27 @@ This should behave identically to PyTorch’s built-in `AdamW` optimizer. (Note:
 
 ## Verifying the Difference in Practice
 
-We can test these implementations on a simple task to illustrate the difference. Consider a logistic regression on a toy binary classification dataset. We train the model using both optimizers with the same hyperparameters (including a weight decay factor) and compare outcomes:
+We can test these implementations on a simple classification task to illustrate the difference between **Adam** and **AdamW** optimizers. Consider training a 2-layer neural network on a toy binary classification dataset with nonlinear structure. Both optimizers are configured with the same hyperparameters, including a non-zero weight decay, allowing us to compare how they handle regularization and generalization:
 
-- **Setup**: 2D data points with a linearly separable pattern, small model (just weights and bias).
-- **Hyperparams**: learning rate = 0.05, weight decay = 0.1 for both, 1000 training iterations.
+- **Setup**: A synthetic 2D "moons" dataset with noise, trained using a small feedforward neural network `(2 → 32 → 2)`.
 
-ADDD
+- **Hyperparams**: `learning_rate = 0.01`, `weight_decay = 0.01` for both optimizers, `100` training epochs.
+
+We monitor and compare the **training loss curves** to observe **convergence speed** and **stability**, as well as **the decision boundaries** to assess how each optimizer generalizes over the input space. The results are shown in the following figures:
+
+{{< figure src="loss_curve.png" title="Figure 1: Training Loss Curves for Adam and AdamW." >}}
+{{< figure src="decision_boundary_adam_vs_adamw.png" title="Figure 2: Decision Boundaries for Adam and AdamW." >}}
+
+**Adam** tends to underperform when weight decay is applied, as it couples the weight decay term with its adaptive moment estimates, often leading to suboptimal regularization. In contrast, **AdamW** decouples weight decay from the gradient update, resulting in more regularized and cleaner decision boundaries. While both optimizers converge in terms of training loss, **AdamW** typically shows smoother, more stable convergence and superior generalization. This experiment illustrates why **AdamW** is commonly preferred in modern deep learning frameworks, particularly when regularization through weight decay is needed.
+
+You can find the code used in this experiment in the [GitHub repository](https://github.com/adelbennaceur/adam_vs_adamw).
 
 # Conclusion
 
-In summary, **Adam vs. AdamW** comes down to how weight decay is handled. AdamW’s decoupled weight decay has proven to be a simple yet critical improvement over Adam with L2 regularization. By not letting the regularization term interfere with the adaptive learning rates, AdamW provides more reliable hyperparameter tuning, often faster convergence, and better generalization​. The theoretical insights and empirical results from recent studies support why AdamW is now widely adopted​.
+In summary, **Adam vs. AdamW** comes down to how weight decay is handled. **AdamW**’s decoupled weight decay has proven to be a simple yet critical improvement over **Adam** with L2 regularization. By not letting the regularization term interfere with the adaptive learning rates, **AdamW** provides more reliable hyperparameter tuning, often faster convergence, and better generalization​. The theoretical insights and empirical results from recent studies support why **AdamW** is now widely adopted​.
 
-For practitioners, the takeaway is clear: **if you are using Adam and you need regularization, prefer AdamW (or at least ensure your optimizer separates weight decay from the momentum calculation)**. Implementations are straightforward, as we demonstrated, and most frameworks have this built-in. Meanwhile, keep an eye on newer variants like AdaBelief and RAdam, which show that there is still room to refine optimization algorithms for even better performance. But when in doubt, AdamW is a safe and robust choice that merges Adam’s adaptive convenience with the principled regularization of weight decay – giving you the best of both worlds in training deep neural networks.
+For practitioners, the takeaway is clear: **if you are using Adam and you need regularization,
+prefer AdamW (or at least ensure your optimizer separates weight decay from the momentum calculation)**.
+Implementations are straightforward, as we demonstrated, and most frameworks have this built-in. However,
+New optimizers are constantly being proposed, and their performance can vary significantly
+depending on the task.

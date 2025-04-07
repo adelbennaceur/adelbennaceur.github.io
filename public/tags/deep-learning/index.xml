@@ -9,18 +9,14 @@
     <lastBuildDate>Fri, 04 Apr 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/adelbennaceur/tags/deep-learning/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Adam vs. AdamW: A (Relatively) Deep Dive into Optimizer Differences</title>
+      <title>Adam vs. AdamW: A Practical Deep Dive into Optimizer Differences</title>
       <link>http://localhost:1313/adelbennaceur/posts/adam_vs_adamw/</link>
       <pubDate>Fri, 04 Apr 2025 00:00:00 +0000</pubDate>
       <guid>http://localhost:1313/adelbennaceur/posts/adam_vs_adamw/</guid>
-      <description>&lt;h1 id=&#34;background-adam-optimizer-overview&#34;&gt;Background: Adam Optimizer Overview&lt;/h1&gt;
-&lt;p&gt;Adam (Adaptive Moment Estimation) is a popular stochastic optimizer introduced by &lt;a href=&#34;https://arxiv.org/abs/1412.6980&#34;&gt;Kingma and Ba (2014)&lt;/a&gt;. It combines ideas from momentum and RMSProp to adapt the learning rate for each parameter. Mathematically, Adam maintains an exponentially decaying average of past gradients (first moment) and of past squared gradients (second moment). At each step $t$, for each parameter $\theta$, Adam updates these estimates as:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;First moment (momentum)&lt;/strong&gt;: $m_t = \beta_1 m_{t-1} + (1-\beta_1)g_t$,&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Second moment (RMS)&lt;/strong&gt;: $v_t = \beta_2v_{t-1} + (1-\beta_2)g_t^2$,&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;where $g_t = \nabla_{\theta} f_t(\theta_{t-1})$ is the current gradient, and $\beta_1,\beta_2$ are decay rates (e.g. $0.9$ and $0.999$ by default). To correct the initialization bias (since $m_0=v_0=0$), bias-corrected estimates are computed:
-$$\hat{m}_t = \frac{m_t}{1-\beta_1^t}, \qquad \hat{v}_t = \frac{v_t}{1-\beta_2^t}$$&lt;/p&gt;</description>
+      <description>&lt;p&gt;Hello! This is my first blog ever!!
+I&amp;rsquo;ll write about Adam and AdamW. it&amp;rsquo;s always good to go back to the basics and brush up on what&amp;rsquo;s happening under the hood :), so let&amp;rsquo;s get started.&lt;/p&gt;
+&lt;h1 id=&#34;background-adam-optimizer-overview&#34;&gt;Background: Adam Optimizer Overview&lt;/h1&gt;
+&lt;p&gt;Adam (Adaptive Moment Estimation) is a popular stochastic optimizer introduced by &lt;a href=&#34;https://arxiv.org/abs/1412.6980&#34;&gt;Kingma and Ba (2014)&lt;/a&gt;. It combines ideas from momentum and RMSProp to adapt the learning rate for each parameter. Mathematically, Adam maintains an exponentially decaying average of past gradients (first moment) and of past squared gradients (second moment). At each step $t$, for each parameter $\theta$, Adam updates these estimates as:&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

@@ -153,16 +153,16 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">Adam vs. AdamW: A (Relatively) Deep Dive into Optimizer Differences
+    <h2 class="entry-hint-parent">Adam vs. AdamW: A Practical Deep Dive into Optimizer Differences
     </h2>
   </header>
   <div class="entry-content">
-    <p>Background: Adam Optimizer Overview Adam (Adaptive Moment Estimation) is a popular stochastic optimizer introduced by Kingma and Ba (2014). It combines ideas from momentum and RMSProp to adapt the learning rate for each parameter. Mathematically, Adam maintains an exponentially decaying average of past gradients (first moment) and of past squared gradients (second moment). At each step $t$, for each parameter $\theta$, Adam updates these estimates as:
-First moment (momentum): $m_t = \beta_1 m_{t-1} &#43; (1-\beta_1)g_t$, Second moment (RMS): $v_t = \beta_2v_{t-1} &#43; (1-\beta_2)g_t^2$, where $g_t = \nabla_{\theta} f_t(\theta_{t-1})$ is the current gradient, and $\beta_1,\beta_2$ are decay rates (e.g. $0.9$ and $0.999$ by default). To correct the initialization bias (since $m_0=v_0=0$), bias-corrected estimates are computed: $$\hat{m}_t = \frac{m_t}{1-\beta_1^t}, \qquad \hat{v}_t = \frac{v_t}{1-\beta_2^t}$$
+    <p>Hello! This is my first blog ever!! I’ll write about Adam and AdamW. it’s always good to go back to the basics and brush up on what’s happening under the hood :), so let’s get started.
+Background: Adam Optimizer Overview Adam (Adaptive Moment Estimation) is a popular stochastic optimizer introduced by Kingma and Ba (2014). It combines ideas from momentum and RMSProp to adapt the learning rate for each parameter. Mathematically, Adam maintains an exponentially decaying average of past gradients (first moment) and of past squared gradients (second moment). At each step $t$, for each parameter $\theta$, Adam updates these estimates as:
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-04-04 00:00:00 +0000 UTC'>April 4, 2025</span>&nbsp;·&nbsp;10 min&nbsp;·&nbsp;1966 words</footer>
-  <a class="entry-link" aria-label="post link to Adam vs. AdamW: A (Relatively) Deep Dive into Optimizer Differences" href="http://localhost:1313/adelbennaceur/posts/adam_vs_adamw/"></a>
+  <footer class="entry-footer"><span title='2025-04-04 00:00:00 +0000 UTC'>April 4, 2025</span>&nbsp;·&nbsp;11 min&nbsp;·&nbsp;2167 words</footer>
+  <a class="entry-link" aria-label="post link to Adam vs. AdamW: A Practical Deep Dive into Optimizer Differences" href="http://localhost:1313/adelbennaceur/posts/adam_vs_adamw/"></a>
 </article>
     </main>
     
