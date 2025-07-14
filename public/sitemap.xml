@@ -2,6 +2,33 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>http://localhost:1313/adelbennaceur/</loc>
+    <lastmod>2025-06-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/adelbennaceur/tags/data-parallel/</loc>
+    <lastmod>2025-06-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/adelbennaceur/tags/deep-learning/</loc>
+    <lastmod>2025-06-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/adelbennaceur/tags/distributed-data-parallel/</loc>
+    <lastmod>2025-06-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/adelbennaceur/tags/distributed-training/</loc>
+    <lastmod>2025-06-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/adelbennaceur/posts/distributed_training/distributed_training_intro/</loc>
+    <lastmod>2025-06-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/adelbennaceur/posts/</loc>
+    <lastmod>2025-06-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/adelbennaceur/tags/</loc>
+    <lastmod>2025-06-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/adelbennaceur/tags/tensor-parallelism/</loc>
+    <lastmod>2025-06-30T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>http://localhost:1313/adelbennaceur/tags/adam/</loc>
     <lastmod>2025-04-04T00:00:00+00:00</lastmod>
   </url><url>
@@ -11,19 +38,7 @@
     <loc>http://localhost:1313/adelbennaceur/tags/adamw/</loc>
     <lastmod>2025-04-04T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/adelbennaceur/</loc>
-    <lastmod>2025-04-04T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/adelbennaceur/tags/deep-learning/</loc>
-    <lastmod>2025-04-04T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>http://localhost:1313/adelbennaceur/tags/optimizers/</loc>
-    <lastmod>2025-04-04T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/adelbennaceur/posts/</loc>
-    <lastmod>2025-04-04T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/adelbennaceur/tags/</loc>
     <lastmod>2025-04-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/adelbennaceur/archives/</loc>
