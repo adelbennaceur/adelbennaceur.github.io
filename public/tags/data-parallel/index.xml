@@ -4,12 +4,20 @@
     <title>Data Parallel on Adel Bennaceur</title>
     <link>http://localhost:1313/adelbennaceur/tags/data-parallel/</link>
     <description>Recent content in Data Parallel on Adel Bennaceur</description>
-    <generator>Hugo -- 0.148.1</generator>
+    <generator>Hugo -- 0.148.2</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 30 Jun 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/adelbennaceur/tags/data-parallel/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Distributed Data Parallelism with LizarDist</title>
+      <title>Exploring Distributed Deep Learning with LizardDist</title>
+      <link>http://localhost:1313/adelbennaceur/posts/distributed_training/distributed_training_intro/</link>
+      <pubDate>Mon, 30 Jun 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/adelbennaceur/posts/distributed_training/distributed_training_intro/</guid>
+      <description>&lt;p&gt;In this post, I’m laying the groundwork for my experiments with distributed training strategies using PyTorch and mpi4py. I want to explore approaches like distributed data parallelism, tensor parallelism, hybrid strategies, and more, digging into how communication, computation overlap, and scaling trade-offs work under the hood.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/adelbennaceur/lizardist&#34;&gt;LizarDist&lt;/a&gt; is the playground I’m building to test and learn these concepts. My goal is not just to build something that works, but to truly internalize the theory and practical challenges of distributed deep learning.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>How I Built My Own (tiny) Distributed Data Parallel Engine (LizarDist)</title>
       <link>http://localhost:1313/adelbennaceur/posts/distributed_training/distributed_training_ddp/</link>
       <pubDate>Mon, 30 Jun 2025 00:00:00 +0000</pubDate>
       <guid>http://localhost:1313/adelbennaceur/posts/distributed_training/distributed_training_ddp/</guid>
@@ -23,14 +31,6 @@
 &lt;/figure&gt;
 
 &lt;p&gt;Let’s assume we have:&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Exploring Distributed Deep Learning with LizardDist</title>
-      <link>http://localhost:1313/adelbennaceur/posts/distributed_training/distributed_training_intro/</link>
-      <pubDate>Mon, 30 Jun 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/adelbennaceur/posts/distributed_training/distributed_training_intro/</guid>
-      <description>&lt;p&gt;In this post, I’m laying the groundwork for my experiments with distributed training strategies using PyTorch and mpi4py. I want to explore approaches like distributed data parallelism, tensor parallelism, hybrid strategies, and more, digging into how communication, computation overlap, and scaling trade-offs work under the hood.&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/adelbennaceur/lizardist&#34;&gt;LizarDist&lt;/a&gt; is the playground I’m building to test and learn these concepts. My goal is not just to build something that works, but to truly internalize the theory and practical challenges of distributed deep learning.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

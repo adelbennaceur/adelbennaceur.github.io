@@ -14,13 +14,13 @@
     <loc>http://localhost:1313/adelbennaceur/tags/distributed-data-parallel/</loc>
     <lastmod>2025-06-30T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/adelbennaceur/posts/distributed_training/distributed_training_ddp/</loc>
-    <lastmod>2025-06-30T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>http://localhost:1313/adelbennaceur/tags/distributed-training/</loc>
     <lastmod>2025-06-30T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/adelbennaceur/posts/distributed_training/distributed_training_intro/</loc>
+    <lastmod>2025-06-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/adelbennaceur/posts/distributed_training/distributed_training_ddp/</loc>
     <lastmod>2025-06-30T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/adelbennaceur/posts/</loc>
