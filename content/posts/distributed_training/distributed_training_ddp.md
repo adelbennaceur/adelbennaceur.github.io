@@ -1,5 +1,5 @@
 ---
-title: "How I Built My Own (tiny) Distributed Data Parallel Engine (LizarDist)"
+title: "Part 1: How I Built My Own (tiny) Distributed Data Parallel Engine (LizarDist)"
 date: 2025-06-30
 draft: false
 ShowToc: true
@@ -72,9 +72,9 @@ This reduces communication overhead significantly.
 
 >Imagine sending letters (gradients) from one office (GPU) to another. Naively, we'd send each letter in its own envelope (one `AllReduce` per tensor), wasting time and postage. Instead, we collect many letters, put them in one big envelope (bucket), and send it all at once (one `AllReduce` per bucket). Same contents delivered, with less overhead.
 
-Figure 2. shows the summary of the DDp
+Figure 2. shows the summary of the DDP workflow
 
-| ![DDP Workflow](ddp_workflow.png) |
+| ![DDP Workflow](content/posts/distributed_training/ddp_workflow.png) |
 |:--:|
 | *Figure 1: Distributed Data Parallel Workflow.* |
 
