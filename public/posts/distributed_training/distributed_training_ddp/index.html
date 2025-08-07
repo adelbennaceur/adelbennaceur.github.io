@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="noindex, nofollow">
-<title>How I Built My Own (tiny) Distributed Data Parallel Engine (LizarDist) | Adel Bennaceur</title>
+<title>Part 1: How I Built My Own (tiny) Distributed Data Parallel Engine (LizarDist) | Adel Bennaceur</title>
 <meta name="keywords" content="deep learning, distributed training, Distributed Data Parallel, Data Parallel, Tensor Parallelism">
 <meta name="description" content="1. What is Distributed Data Parallel?
 Distributed Data Parallel (DDP) is a training strategy where multiple processes (GPUs) each hold a replica of the model. Every process gets a different subset of the data (hence “data parallel”) called mini-batches, computes forward and backward passes locally, and then synchronizes gradients across processes so that the model updates stay consistent globally.
@@ -152,9 +152,9 @@ Let’s assume we have:">
   <header class="post-header">
     <div class="breadcrumbs"><a href="http://localhost:1313/adelbennaceur/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/adelbennaceur/posts/">Posts</a></div>
     <h1 class="post-title entry-hint-parent">
-      How I Built My Own (tiny) Distributed Data Parallel Engine (LizarDist)
+      Part 1: How I Built My Own (tiny) Distributed Data Parallel Engine (LizarDist)
     </h1>
-    <div class="post-meta"><span title='2025-06-30 00:00:00 +0000 UTC'>June 30, 2025</span>&nbsp;·&nbsp;6 min&nbsp;·&nbsp;1259 words
+    <div class="post-meta"><span title='2025-06-30 00:00:00 +0000 UTC'>June 30, 2025</span>&nbsp;·&nbsp;6 min&nbsp;·&nbsp;1260 words
 
 </div>
   </header> <div class="toc">
@@ -265,11 +265,11 @@ $$g_i =\nabla_\theta L_i(f(x_i,\theta), y^{target}_i)$$</p>
 <p>This reduces communication overhead significantly.</p>
 <blockquote>
 <p>Imagine sending letters (gradients) from one office (GPU) to another. Naively, we&rsquo;d send each letter in its own envelope (one <code>AllReduce</code> per tensor), wasting time and postage. Instead, we collect many letters, put them in one big envelope (bucket), and send it all at once (one <code>AllReduce</code> per bucket). Same contents delivered, with less overhead.</p></blockquote>
-<p>Figure 2. shows the summary of the DDp</p>
+<p>Figure 2. shows the summary of the DDP workflow</p>
 <table>
   <thead>
       <tr>
-          <th style="text-align: center"><img alt="DDP Workflow" loading="lazy" src="ddp_workflow.png"></th>
+          <th style="text-align: center"><img alt="DDP Workflow" loading="lazy" src="public/posts/distributed_training/ddp_workflow.png"></th>
       </tr>
   </thead>
   <tbody>

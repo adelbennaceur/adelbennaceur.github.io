@@ -167,16 +167,16 @@ LizarDist is the playground I’m building to test and learn these concepts. My 
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">How I Built My Own (tiny) Distributed Data Parallel Engine (LizarDist)
+    <h2 class="entry-hint-parent">Part 1: How I Built My Own (tiny) Distributed Data Parallel Engine (LizarDist)
     </h2>
   </header>
   <div class="entry-content">
     <p>1. What is Distributed Data Parallel? Distributed Data Parallel (DDP) is a training strategy where multiple processes (GPUs) each hold a replica of the model. Every process gets a different subset of the data (hence “data parallel”) called mini-batches, computes forward and backward passes locally, and then synchronizes gradients across processes so that the model updates stay consistent globally.
-2. How does Distributed Data Parallelism work? Figure 1: Distributed Data Parallel Workflow. Let’s assume we have:
+2. How does Distributed Data Parallelism work? Let’s assume we have:
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-06-30 00:00:00 +0000 UTC'>June 30, 2025</span>&nbsp;·&nbsp;6 min&nbsp;·&nbsp;1251 words</footer>
-  <a class="entry-link" aria-label="post link to How I Built My Own (tiny) Distributed Data Parallel Engine (LizarDist)" href="http://localhost:1313/adelbennaceur/posts/distributed_training/distributed_training_ddp/"></a>
+  <footer class="entry-footer"><span title='2025-06-30 00:00:00 +0000 UTC'>June 30, 2025</span>&nbsp;·&nbsp;6 min&nbsp;·&nbsp;1260 words</footer>
+  <a class="entry-link" aria-label="post link to Part 1: How I Built My Own (tiny) Distributed Data Parallel Engine (LizarDist)" href="http://localhost:1313/adelbennaceur/posts/distributed_training/distributed_training_ddp/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -191,60 +191,6 @@ Background: Adam Optimizer Overview Adam (Adaptive Moment Estimation) is a popul
   </div>
   <footer class="entry-footer"><span title='2025-04-04 00:00:00 +0000 UTC'>April 4, 2025</span>&nbsp;·&nbsp;11 min&nbsp;·&nbsp;2167 words</footer>
   <a class="entry-link" aria-label="post link to Adam vs. AdamW: A Practical Deep Dive into Optimizer Differences" href="http://localhost:1313/adelbennaceur/posts/adam_vs_adamw/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Let&#39;s Implement a Camera ISP in CUDA – Part 0: Introduction
-      <span class="entry-hint" title="Draft">
-        <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" fill="currentColor">
-          <path
-            d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
-        </svg>
-      </span>
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p></p>
-  </div>
-  <footer class="entry-footer"><span title='2025-03-26 00:00:00 +0000 UTC'>March 26, 2025</span>&nbsp;·&nbsp;0 min&nbsp;·&nbsp;0 words</footer>
-  <a class="entry-link" aria-label="post link to Let&#39;s Implement a Camera ISP in CUDA – Part 0: Introduction" href="http://localhost:1313/adelbennaceur/posts/camera_isp/cusip_part0/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Let&#39;s Implement a Camera ISP in CUDA – Part 1: Dead Pixel Correction
-      <span class="entry-hint" title="Draft">
-        <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" fill="currentColor">
-          <path
-            d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
-        </svg>
-      </span>
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p></p>
-  </div>
-  <footer class="entry-footer"><span title='2025-03-26 00:00:00 +0000 UTC'>March 26, 2025</span>&nbsp;·&nbsp;0 min&nbsp;·&nbsp;0 words</footer>
-  <a class="entry-link" aria-label="post link to Let&#39;s Implement a Camera ISP in CUDA – Part 1: Dead Pixel Correction" href="http://localhost:1313/adelbennaceur/posts/camera_isp/cusip_part1/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Let&#39;s Implement a Camera ISP in CUDA – Part 2: Black Level Adjustement
-      <span class="entry-hint" title="Draft">
-        <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" fill="currentColor">
-          <path
-            d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
-        </svg>
-      </span>
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p></p>
-  </div>
-  <footer class="entry-footer"><span title='2025-03-26 00:00:00 +0000 UTC'>March 26, 2025</span>&nbsp;·&nbsp;0 min&nbsp;·&nbsp;0 words</footer>
-  <a class="entry-link" aria-label="post link to Let&#39;s Implement a Camera ISP in CUDA – Part 2: Black Level Adjustement" href="http://localhost:1313/adelbennaceur/posts/camera_isp/cusip_part2/"></a>
 </article>
     </main>
     

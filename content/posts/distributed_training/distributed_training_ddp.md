@@ -74,7 +74,7 @@ This reduces communication overhead significantly.
 
 Figure 2. shows the summary of the DDP workflow
 
-| ![DDP Workflow](content/posts/distributed_training/ddp_workflow.png) |
+| ![DDP Workflow](public/posts/distributed_training/ddp_workflow.png) |
 |:--:|
 | *Figure 1: Distributed Data Parallel Workflow.* |
 

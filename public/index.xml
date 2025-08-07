@@ -17,7 +17,7 @@
 &lt;p&gt;&lt;a href=&#34;https://github.com/adelbennaceur/lizardist&#34;&gt;LizarDist&lt;/a&gt; is the playground I’m building to test and learn these concepts. My goal is not just to build something that works, but to truly internalize the theory and practical challenges of distributed deep learning.&lt;/p&gt;</description>
     </item>
     <item>
-      <title>How I Built My Own (tiny) Distributed Data Parallel Engine (LizarDist)</title>
+      <title>Part 1: How I Built My Own (tiny) Distributed Data Parallel Engine (LizarDist)</title>
       <link>http://localhost:1313/adelbennaceur/posts/distributed_training/distributed_training_ddp/</link>
       <pubDate>Mon, 30 Jun 2025 00:00:00 +0000</pubDate>
       <guid>http://localhost:1313/adelbennaceur/posts/distributed_training/distributed_training_ddp/</guid>
@@ -35,27 +35,6 @@
 I&amp;rsquo;ll write about Adam and AdamW. it&amp;rsquo;s always good to go back to the basics and brush up on what&amp;rsquo;s happening under the hood :), so let&amp;rsquo;s get started.&lt;/p&gt;
 &lt;h1 id=&#34;background-adam-optimizer-overview&#34;&gt;Background: Adam Optimizer Overview&lt;/h1&gt;
 &lt;p&gt;Adam (Adaptive Moment Estimation) is a popular stochastic optimizer introduced by &lt;a href=&#34;https://arxiv.org/abs/1412.6980&#34;&gt;Kingma and Ba (2014)&lt;/a&gt;. It combines ideas from momentum and RMSProp to adapt the learning rate for each parameter. Mathematically, Adam maintains an exponentially decaying average of past gradients (first moment) and of past squared gradients (second moment). At each step $t$, for each parameter $\theta$, Adam updates these estimates as:&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Let&#39;s Implement a Camera ISP in CUDA – Part 0: Introduction</title>
-      <link>http://localhost:1313/adelbennaceur/posts/camera_isp/cusip_part0/</link>
-      <pubDate>Wed, 26 Mar 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/adelbennaceur/posts/camera_isp/cusip_part0/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Let&#39;s Implement a Camera ISP in CUDA – Part 1: Dead Pixel Correction</title>
-      <link>http://localhost:1313/adelbennaceur/posts/camera_isp/cusip_part1/</link>
-      <pubDate>Wed, 26 Mar 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/adelbennaceur/posts/camera_isp/cusip_part1/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Let&#39;s Implement a Camera ISP in CUDA – Part 2: Black Level Adjustement</title>
-      <link>http://localhost:1313/adelbennaceur/posts/camera_isp/cusip_part2/</link>
-      <pubDate>Wed, 26 Mar 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/adelbennaceur/posts/camera_isp/cusip_part2/</guid>
-      <description></description>
     </item>
   </channel>
 </rss>
