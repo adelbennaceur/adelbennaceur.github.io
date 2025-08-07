@@ -9,6 +9,22 @@
     <lastBuildDate>Mon, 30 Jun 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/adelbennaceur/tags/deep-learning/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Distributed Data Parallelism with LizarDist</title>
+      <link>http://localhost:1313/adelbennaceur/posts/distributed_training/distributed_training_ddp/</link>
+      <pubDate>Mon, 30 Jun 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/adelbennaceur/posts/distributed_training/distributed_training_ddp/</guid>
+      <description>&lt;h1 id=&#34;1-what-is-distributed-data-parallel&#34;&gt;1. What is Distributed Data Parallel?&lt;/h1&gt;
+&lt;p&gt;Distributed Data Parallel (DDP) is a training strategy where multiple processes (GPUs) each hold a replica of the model. Every process gets a different subset of the data (hence “data parallel”) called mini-batches, computes forward and backward passes locally, and then synchronizes gradients across processes so that the model updates stay consistent globally.&lt;/p&gt;
+&lt;h1 id=&#34;2-how-does-distributed-data-parallelism-work&#34;&gt;2. How does Distributed Data Parallelism work?&lt;/h1&gt;
+&lt;figure&gt;
+    &lt;img loading=&#34;lazy&#34; src=&#34;ddp_workflow.png&#34;/&gt; &lt;figcaption&gt;
+            Figure 1: Distributed Data Parallel Workflow.
+        &lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;Let’s assume we have:&lt;/p&gt;</description>
+    </item>
+    <item>
       <title>Exploring Distributed Deep Learning with LizardDist</title>
       <link>http://localhost:1313/adelbennaceur/posts/distributed_training/distributed_training_intro/</link>
       <pubDate>Mon, 30 Jun 2025 00:00:00 +0000</pubDate>

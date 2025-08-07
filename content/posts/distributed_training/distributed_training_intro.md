@@ -12,3 +12,5 @@ In this post, I’m laying the groundwork for my experiments with distributed tr
 [LizarDist](https://github.com/adelbennaceur/lizardist) is the playground I’m building to test and learn these concepts. My goal is not just to build something that works, but to truly internalize the theory and practical challenges of distributed deep learning.
 
 I’ll share what I learn as I build support for these strategies. This is just the start I’ll be publishing a series of blog posts diving deeper into each concept and design choice as I continue developing the framework from scratch.
+
+Part 1: [Distributed Data Parallelism with LizarDist](/posts/distributed_training/distributed_training_ddp/)
