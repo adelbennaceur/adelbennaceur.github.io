@@ -10,12 +10,6 @@
 <meta name="description" content="1. What is Distributed Data Parallel?
 Distributed Data Parallel (DDP) is a training strategy where multiple processes (GPUs) each hold a replica of the model. Every process gets a different subset of the data (hence “data parallel”) called mini-batches, computes forward and backward passes locally, and then synchronizes gradients across processes so that the model updates stay consistent globally.
 2. How does Distributed Data Parallelism work?
-
-     
-            Figure 1: Distributed Data Parallel Workflow.
-        
-
-
 Let’s assume we have:">
 <meta name="author" content="">
 <link rel="canonical" href="http://localhost:1313/adelbennaceur/posts/distributed_training/distributed_training_ddp/">
@@ -160,7 +154,7 @@ Let’s assume we have:">
     <h1 class="post-title entry-hint-parent">
       How I Built My Own (tiny) Distributed Data Parallel Engine (LizarDist)
     </h1>
-    <div class="post-meta"><span title='2025-06-30 00:00:00 +0000 UTC'>June 30, 2025</span>&nbsp;·&nbsp;6 min&nbsp;·&nbsp;1251 words
+    <div class="post-meta"><span title='2025-06-30 00:00:00 +0000 UTC'>June 30, 2025</span>&nbsp;·&nbsp;6 min&nbsp;·&nbsp;1259 words
 
 </div>
   </header> <div class="toc">
@@ -221,12 +215,6 @@ Let’s assume we have:">
   <div class="post-content"><h1 id="1-what-is-distributed-data-parallel">1. What is Distributed Data Parallel?<a hidden class="anchor" aria-hidden="true" href="#1-what-is-distributed-data-parallel">#</a></h1>
 <p>Distributed Data Parallel (DDP) is a training strategy where multiple processes (GPUs) each hold a replica of the model. Every process gets a different subset of the data (hence “data parallel”) called mini-batches, computes forward and backward passes locally, and then synchronizes gradients across processes so that the model updates stay consistent globally.</p>
 <h1 id="2-how-does-distributed-data-parallelism-work">2. How does Distributed Data Parallelism work?<a hidden class="anchor" aria-hidden="true" href="#2-how-does-distributed-data-parallelism-work">#</a></h1>
-<figure>
-    <img loading="lazy" src="ddp_workflow.png"/> <figcaption>
-            Figure 1: Distributed Data Parallel Workflow.
-        </figcaption>
-</figure>
-
 <p>Let’s assume we have:</p>
 <ul>
 <li>$N$ processes (each on a GPU or node).</li>
@@ -249,13 +237,19 @@ $$g_i =\nabla_\theta L_i(f(x_i,\theta), y^{target}_i)$$</p>
 <li><strong>Apply a reduction</strong> (<code>sum</code> in this case) <strong>to the gradients</strong> across all processes.</li>
 <li><strong>Distribute</strong> the result to all processes.</li>
 </ol>
-<p>A visual illustration of <code>AllReduce</code> is shown in Figure 2.
-<figure><a href="#ZgotmplZ">
-    <img loading="lazy" src="all_reduce.png"/> </a><figcaption>
-            Figure 2: AllReduce Operation. Source: tech.preferred.jp
-        </figcaption>
-</figure>
-</p>
+<p>A visual illustration of <code>AllReduce</code> is shown in Figure 2.</p>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: center"><img alt="AllReduce operation" loading="lazy" src="all_reduce.png"></th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: center"><em>Figure 2: AllReduce Operation. Source: <a href="https://tech.preferred.jp/wp-content/uploads/2018/07/fig_1.png">tech.preferred.jp</a></em></td>
+      </tr>
+  </tbody>
+</table>
 <h3 id="24-parameter-update-local-update-using-global-gradients">2.4 Parameter Update (Local Update Using Global Gradients)<a hidden class="anchor" aria-hidden="true" href="#24-parameter-update-local-update-using-global-gradients">#</a></h3>
 <p>Once the gradients are synchronized, each process updates the model parameters:</p>
 <p>$$\theta^{(t+1)} \leftarrow \theta^{(t)} - \alpha \cdot g_{avg}$$</p>
@@ -271,6 +265,19 @@ $$g_i =\nabla_\theta L_i(f(x_i,\theta), y^{target}_i)$$</p>
 <p>This reduces communication overhead significantly.</p>
 <blockquote>
 <p>Imagine sending letters (gradients) from one office (GPU) to another. Naively, we&rsquo;d send each letter in its own envelope (one <code>AllReduce</code> per tensor), wasting time and postage. Instead, we collect many letters, put them in one big envelope (bucket), and send it all at once (one <code>AllReduce</code> per bucket). Same contents delivered, with less overhead.</p></blockquote>
+<p>Figure 2. shows the summary of the DDp</p>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: center"><img alt="DDP Workflow" loading="lazy" src="ddp_workflow.png"></th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: center"><em>Figure 1: Distributed Data Parallel Workflow.</em></td>
+      </tr>
+  </tbody>
+</table>
 <h1 id="3-implementation-of-ddp-in-lizardist">3. Implementation of DDP in LizarDist<a hidden class="anchor" aria-hidden="true" href="#3-implementation-of-ddp-in-lizardist">#</a></h1>
 <p>When I first started building LizarDist, it was just meant to be a small exercise from Jacob Hilton’s <a href="https://github.com/jacobhilton/deep_learning_curriculum">Deep Learning Curriculum</a>. LizarDist evolved into a more in depth exploration of distributed training strategies. I didn’t stop at basic data parallelism, I explored other strategies like pipeline and model parallelism that will be included in this minimal framework.</p>
 <p>At its core, LizarDist is my sandbox to understand how strategies like Data Parallelism actually work. Let&rsquo;s break it down.</p>

@@ -13,8 +13,6 @@ Distributed Data Parallel (DDP) is a training strategy where multiple processes 
 
 # 2. How does Distributed Data Parallelism work?
 
-{{< figure src="ddp_workflow.png" title="Figure 1: Distributed Data Parallel Workflow." >}}
-
 Let’s assume we have:
 
 - $N$ processes (each on a GPU or node).
@@ -47,7 +45,10 @@ This is done using the `AllReduce` operation (implemented by the backend like NC
 2. **Distribute** the result to all processes.
 
 A visual illustration of `AllReduce` is shown in Figure 2.
-{{< figure src="all_reduce.png" title="Figure 2: AllReduce Operation. Source: tech.preferred.jp" link="<https://tech.preferred.jp/en/blog/technologies-behind-distributed-deep-learning-allreduce/>" >}}
+
+| ![AllReduce operation](all_reduce.png) |
+|:--:|
+| *Figure 2: AllReduce Operation. Source: [tech.preferred.jp](https://tech.preferred.jp/wp-content/uploads/2018/07/fig_1.png)* |
 
 ### 2.4 Parameter Update (Local Update Using Global Gradients)
 
@@ -70,6 +71,12 @@ Each tensor in our model has its own gradient. Naively, we’d call `AllReduce` 
 This reduces communication overhead significantly.
 
 >Imagine sending letters (gradients) from one office (GPU) to another. Naively, we'd send each letter in its own envelope (one `AllReduce` per tensor), wasting time and postage. Instead, we collect many letters, put them in one big envelope (bucket), and send it all at once (one `AllReduce` per bucket). Same contents delivered, with less overhead.
+
+Figure 2. shows the summary of the DDp
+
+| ![DDP Workflow](ddp_workflow.png) |
+|:--:|
+| *Figure 1: Distributed Data Parallel Workflow.* |
 
 # 3. Implementation of DDP in LizarDist
 

@@ -64,5 +64,33 @@
       <guid>http://localhost:1313/adelbennaceur/tags/optimizers/</guid>
       <description></description>
     </item>
+    <item>
+      <title>Black Level Adjustement</title>
+      <link>http://localhost:1313/adelbennaceur/tags/black-level-adjustement/</link>
+      <pubDate>Wed, 26 Mar 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/adelbennaceur/tags/black-level-adjustement/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Camera ISP</title>
+      <link>http://localhost:1313/adelbennaceur/tags/camera-isp/</link>
+      <pubDate>Wed, 26 Mar 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/adelbennaceur/tags/camera-isp/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Computational Photgraphy</title>
+      <link>http://localhost:1313/adelbennaceur/tags/computational-photgraphy/</link>
+      <pubDate>Wed, 26 Mar 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/adelbennaceur/tags/computational-photgraphy/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Dead Pixel Correction</title>
+      <link>http://localhost:1313/adelbennaceur/tags/dead-pixel-correction/</link>
+      <pubDate>Wed, 26 Mar 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/adelbennaceur/tags/dead-pixel-correction/</guid>
+      <description></description>
+    </item>
   </channel>
 </rss>

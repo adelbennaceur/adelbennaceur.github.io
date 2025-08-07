@@ -5,11 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="noindex, nofollow">
-<title>Posts | Adel Bennaceur</title>
-<meta name="keywords" content="">
-<meta name="description" content="Posts - Adel Bennaceur">
+<title>Let&#39;s Implement a Camera ISP in CUDA – Part 0: Introduction | Adel Bennaceur</title>
+<meta name="keywords" content="Computational photgraphy, camera ISP">
+<meta name="description" content="Let&#39;s Implement a Camera ISP in CUDA – Part 0: Introduction - Adel Bennaceur">
 <meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/adelbennaceur/posts/">
+<link rel="canonical" href="http://localhost:1313/adelbennaceur/posts/camera_isp/cusip_part0/">
 <link crossorigin="anonymous" href="/adelbennaceur/assets/css/stylesheet.93f625d739f1d6a5c6f20c146bc6a8d26b233492b34b2220c54b12fd46a04ded.css" integrity="sha256-k/Yl1znx1qXG8gwUa8ao0msjNJKzSyIgxUsS/UagTe0=" rel="preload stylesheet" as="style">
 <link rel="icon" href="http://localhost:1313/adelbennaceur/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/adelbennaceur/favicon-16x16.png">
@@ -18,8 +18,7 @@
 <link rel="mask-icon" href="http://localhost:1313/adelbennaceur/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/adelbennaceur/posts/index.xml">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/adelbennaceur/posts/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/adelbennaceur/posts/camera_isp/cusip_part0/">
 <noscript>
     <style>
         #theme-toggle,
@@ -76,7 +75,7 @@
 
 </head>
 
-<body class="list" id="top">
+<body class="" id="top">
 <script>
     if (localStorage.getItem("pref-theme") === "dark") {
         document.body.classList.add('dark');
@@ -123,7 +122,7 @@
             </li>
             <li>
                 <a href="http://localhost:1313/adelbennaceur/posts/" title="Blog">
-                    <span class="active">Blog</span>
+                    <span>Blog</span>
                 </a>
             </li>
             <li>
@@ -144,107 +143,45 @@
         </ul>
     </nav>
 </header>
-<main class="main"> 
-<header class="page-header"><div class="breadcrumbs"><a href="http://localhost:1313/adelbennaceur/">Home</a></div>
-  <h1>
-    Posts
-  </h1>
-</header>
+<main class="main">
 
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Exploring Distributed Deep Learning with LizardDist
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>In this post, I’m laying the groundwork for my experiments with distributed training strategies using PyTorch and mpi4py. I want to explore approaches like distributed data parallelism, tensor parallelism, hybrid strategies, and more, digging into how communication, computation overlap, and scaling trade-offs work under the hood.
-LizarDist is the playground I’m building to test and learn these concepts. My goal is not just to build something that works, but to truly internalize the theory and practical challenges of distributed deep learning.
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-06-30 00:00:00 +0000 UTC'>June 30, 2025</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;129 words</footer>
-  <a class="entry-link" aria-label="post link to Exploring Distributed Deep Learning with LizardDist" href="http://localhost:1313/adelbennaceur/posts/distributed_training/distributed_training_intro/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">How I Built My Own (tiny) Distributed Data Parallel Engine (LizarDist)
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>1. What is Distributed Data Parallel? Distributed Data Parallel (DDP) is a training strategy where multiple processes (GPUs) each hold a replica of the model. Every process gets a different subset of the data (hence “data parallel”) called mini-batches, computes forward and backward passes locally, and then synchronizes gradients across processes so that the model updates stay consistent globally.
-2. How does Distributed Data Parallelism work? Figure 1: Distributed Data Parallel Workflow. Let’s assume we have:
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-06-30 00:00:00 +0000 UTC'>June 30, 2025</span>&nbsp;·&nbsp;6 min&nbsp;·&nbsp;1251 words</footer>
-  <a class="entry-link" aria-label="post link to How I Built My Own (tiny) Distributed Data Parallel Engine (LizarDist)" href="http://localhost:1313/adelbennaceur/posts/distributed_training/distributed_training_ddp/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Adam vs. AdamW: A Practical Deep Dive into Optimizer Differences
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Hello! This is my first blog ever!! I’ll write about Adam and AdamW. it’s always good to go back to the basics and brush up on what’s happening under the hood :), so let’s get started.
-Background: Adam Optimizer Overview Adam (Adaptive Moment Estimation) is a popular stochastic optimizer introduced by Kingma and Ba (2014). It combines ideas from momentum and RMSProp to adapt the learning rate for each parameter. Mathematically, Adam maintains an exponentially decaying average of past gradients (first moment) and of past squared gradients (second moment). At each step $t$, for each parameter $\theta$, Adam updates these estimates as:
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-04-04 00:00:00 +0000 UTC'>April 4, 2025</span>&nbsp;·&nbsp;11 min&nbsp;·&nbsp;2167 words</footer>
-  <a class="entry-link" aria-label="post link to Adam vs. AdamW: A Practical Deep Dive into Optimizer Differences" href="http://localhost:1313/adelbennaceur/posts/adam_vs_adamw/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Let&#39;s Implement a Camera ISP in CUDA – Part 0: Introduction
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/adelbennaceur/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/adelbennaceur/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Let&#39;s Implement a Camera ISP in CUDA – Part 0: Introduction
       <span class="entry-hint" title="Draft">
-        <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" fill="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" fill="currentColor">
           <path
             d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
         </svg>
       </span>
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p></p>
-  </div>
-  <footer class="entry-footer"><span title='2025-03-26 00:00:00 +0000 UTC'>March 26, 2025</span>&nbsp;·&nbsp;0 min&nbsp;·&nbsp;0 words</footer>
-  <a class="entry-link" aria-label="post link to Let&#39;s Implement a Camera ISP in CUDA – Part 0: Introduction" href="http://localhost:1313/adelbennaceur/posts/camera_isp/cusip_part0/"></a>
-</article>
+    </h1>
+    <div class="post-meta"><span title='2025-03-26 00:00:00 +0000 UTC'>March 26, 2025</span>&nbsp;·&nbsp;0 min&nbsp;·&nbsp;0 words
 
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Let&#39;s Implement a Camera ISP in CUDA – Part 1: Dead Pixel Correction
-      <span class="entry-hint" title="Draft">
-        <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" fill="currentColor">
-          <path
-            d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
-        </svg>
-      </span>
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p></p>
-  </div>
-  <footer class="entry-footer"><span title='2025-03-26 00:00:00 +0000 UTC'>March 26, 2025</span>&nbsp;·&nbsp;0 min&nbsp;·&nbsp;0 words</footer>
-  <a class="entry-link" aria-label="post link to Let&#39;s Implement a Camera ISP in CUDA – Part 1: Dead Pixel Correction" href="http://localhost:1313/adelbennaceur/posts/camera_isp/cusip_part1/"></a>
-</article>
+</div>
+  </header> 
 
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Let&#39;s Implement a Camera ISP in CUDA – Part 2: Black Level Adjustement
-      <span class="entry-hint" title="Draft">
-        <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" fill="currentColor">
-          <path
-            d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
-        </svg>
-      </span>
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p></p>
-  </div>
-  <footer class="entry-footer"><span title='2025-03-26 00:00:00 +0000 UTC'>March 26, 2025</span>&nbsp;·&nbsp;0 min&nbsp;·&nbsp;0 words</footer>
-  <a class="entry-link" aria-label="post link to Let&#39;s Implement a Camera ISP in CUDA – Part 2: Black Level Adjustement" href="http://localhost:1313/adelbennaceur/posts/camera_isp/cusip_part2/"></a>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/adelbennaceur/tags/computational-photgraphy/">Computational Photgraphy</a></li>
+      <li><a href="http://localhost:1313/adelbennaceur/tags/camera-isp/">Camera ISP</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/adelbennaceur/posts/adam_vs_adamw/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Adam vs. AdamW: A Practical Deep Dive into Optimizer Differences</span>
+  </a>
+  <a class="next" href="http://localhost:1313/adelbennaceur/posts/camera_isp/cusip_part1/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Let&#39;s Implement a Camera ISP in CUDA – Part 1: Dead Pixel Correction</span>
+  </a>
+</nav>
+
+  </footer>
 </article>
     </main>
     
@@ -316,6 +253,53 @@ Background: Adam Optimizer Overview Adam (Adaptive Moment Estimation) is a popul
         }
     })
 
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
 </script>
 </body>
 

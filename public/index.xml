@@ -24,12 +24,6 @@
       <description>&lt;h1 id=&#34;1-what-is-distributed-data-parallel&#34;&gt;1. What is Distributed Data Parallel?&lt;/h1&gt;
 &lt;p&gt;Distributed Data Parallel (DDP) is a training strategy where multiple processes (GPUs) each hold a replica of the model. Every process gets a different subset of the data (hence “data parallel”) called mini-batches, computes forward and backward passes locally, and then synchronizes gradients across processes so that the model updates stay consistent globally.&lt;/p&gt;
 &lt;h1 id=&#34;2-how-does-distributed-data-parallelism-work&#34;&gt;2. How does Distributed Data Parallelism work?&lt;/h1&gt;
-&lt;figure&gt;
-    &lt;img loading=&#34;lazy&#34; src=&#34;ddp_workflow.png&#34;/&gt; &lt;figcaption&gt;
-            Figure 1: Distributed Data Parallel Workflow.
-        &lt;/figcaption&gt;
-&lt;/figure&gt;
-
 &lt;p&gt;Let’s assume we have:&lt;/p&gt;</description>
     </item>
     <item>
@@ -41,6 +35,27 @@
 I&amp;rsquo;ll write about Adam and AdamW. it&amp;rsquo;s always good to go back to the basics and brush up on what&amp;rsquo;s happening under the hood :), so let&amp;rsquo;s get started.&lt;/p&gt;
 &lt;h1 id=&#34;background-adam-optimizer-overview&#34;&gt;Background: Adam Optimizer Overview&lt;/h1&gt;
 &lt;p&gt;Adam (Adaptive Moment Estimation) is a popular stochastic optimizer introduced by &lt;a href=&#34;https://arxiv.org/abs/1412.6980&#34;&gt;Kingma and Ba (2014)&lt;/a&gt;. It combines ideas from momentum and RMSProp to adapt the learning rate for each parameter. Mathematically, Adam maintains an exponentially decaying average of past gradients (first moment) and of past squared gradients (second moment). At each step $t$, for each parameter $\theta$, Adam updates these estimates as:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Let&#39;s Implement a Camera ISP in CUDA – Part 0: Introduction</title>
+      <link>http://localhost:1313/adelbennaceur/posts/camera_isp/cusip_part0/</link>
+      <pubDate>Wed, 26 Mar 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/adelbennaceur/posts/camera_isp/cusip_part0/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Let&#39;s Implement a Camera ISP in CUDA – Part 1: Dead Pixel Correction</title>
+      <link>http://localhost:1313/adelbennaceur/posts/camera_isp/cusip_part1/</link>
+      <pubDate>Wed, 26 Mar 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/adelbennaceur/posts/camera_isp/cusip_part1/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Let&#39;s Implement a Camera ISP in CUDA – Part 2: Black Level Adjustement</title>
+      <link>http://localhost:1313/adelbennaceur/posts/camera_isp/cusip_part2/</link>
+      <pubDate>Wed, 26 Mar 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/adelbennaceur/posts/camera_isp/cusip_part2/</guid>
+      <description></description>
     </item>
   </channel>
 </rss>
