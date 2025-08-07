@@ -245,6 +245,6 @@ That’s it. The rest of the training pipeline is pure PyTorch. The only change 
 
 # 4. Conclusion
 
-If you're If you're curious about how DDP works under the hood in more details, [the PyTorch DDP paper](https://arxiv.org/abs/2006.15704) is a solid starting point. In parallel, I’ve been building [LizarDist](https://github.com/adelbennaceur/lizardist), my own minimal distributed training library. It reimplements core ideas from DDP. For those new to MPI, this [MPI tutorial](https://mpitutorial.com/tutorials/) is a great resource. I also highly recommend Hugging Face’s [Ultra-Scale Training Playbook](https://huggingface.co/spaces/nanotron/ultrascale-playbook) it offers practical insights into scaling strategies and real-world engineering trade-offs.
+If you're curious about how DDP works under the hood in more details, [the PyTorch DDP paper](https://arxiv.org/abs/2006.15704) is a solid starting point. In parallel, I’ve been building [LizarDist](https://github.com/adelbennaceur/lizardist), my own minimal distributed training library. It reimplements core ideas from DDP. For those new to MPI, this [MPI tutorial](https://mpitutorial.com/tutorials/) is a great resource. I also highly recommend Hugging Face’s [Ultra-Scale Training Playbook](https://huggingface.co/spaces/nanotron/ultrascale-playbook) it offers practical insights into scaling strategies and real-world engineering trade-offs.
 
 👉 In future posts, I’ll walk through pipeline parallelism, tensor parallelism, and hybrid strategies I've been implementing in LizarDist.
