@@ -46,7 +46,7 @@ This is done using the `AllReduce` operation (implemented by the backend like NC
 
 A visual illustration of `AllReduce` is shown in Figure 2.
 
-| ![AllReduce operation](all_reduce.png) |
+| ![AllReduce operation](/all_reduce.png) |
 |:--:|
 | *Figure 2: AllReduce Operation. Source: [tech.preferred.jp](https://tech.preferred.jp/wp-content/uploads/2018/07/fig_1.png)* |
 
@@ -74,7 +74,7 @@ This reduces communication overhead significantly.
 
 Figure 2. shows the summary of the DDP workflow
 
-| ![DDP Workflow](public/posts/distributed_training/ddp_workflow.png) |
+| ![DDP Workflow](/ddp_workflow.png) |
 |:--:|
 | *Figure 1: Distributed Data Parallel Workflow.* |
 
