@@ -105,7 +105,7 @@ This Communicator internally holds:
 
 All MPI ops like `AllReduce`, `bcast`, `gather`, and `barrier` are wrapped inside this communicator for easier integration and stats tracking.
 
-### 3.2 Model Replication and Weight Broadcast
+## 3.2 Model Replication and Weight Broadcast
 
 Each process creates its own instance of the model:
 
@@ -128,7 +128,7 @@ self.comm.bcast(param_np, root=root)
 
 to send a copy of each parameter to all other ranks. This prevents silent divergence due to initialization randomness.
 
-### 3.3 Manual Dataset Sharding
+## 3.3 Manual Dataset Sharding
 
 Unlike PyTorch’s built-in [`DistributedSampler`](https://docs.pytorch.org/docs/stable/data.html#torch.utils.data.distributed.DistributedSampler), I implemented manual dataset sharding for transparency:
 
@@ -145,7 +145,7 @@ train_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
 Each process gets a **non-overlapping subset** of the dataset, ensuring full dataset coverage without duplication.
 
-### 3.4 Gradient Synchronization: The Core of DDP
+## 3.4 Gradient Synchronization: The Core of DDP
 
 Once each process computes its local loss and calls `loss.backward()`, its `.grad` fields contain gradients with respect to local data. These need to be averaged across all processes to ensure that each optimizer step is globally consistent.
 
@@ -171,7 +171,7 @@ This does the following:
 param.grad.copy_(torch.from_numpy(avg_grad).to(param.device))
 ```
 
-### 3.5 Bucketing Strategy: Optimize AllReduce
+## 3.5 Bucketing Strategy: Optimize AllReduce
 
 Calling AllReduce for each tensor individually incurs a lot of overhead. To reduce this, I implement gradient bucketing:
 
@@ -206,7 +206,7 @@ The bucketing size is configurable (`bucket_size` in bytes) and tracked for perf
 **Bucketing leads to fewer allreduce calls with larger average data per call**, making communication more efficient overall.
 The code for this is in the [Communicator Class](https://github.com/adelbennaceur/lizardist/blob/889833333fde4fa94444da93ef3b71edc9996813/lizardist/distributed/communicator.py#L70).
 
-### 3.6 Optimizer Step: Same as Standard PyTorch
+## 3.6 Optimizer Step: Same as Standard PyTorch
 
 After gradient synchronization, each process performs a local optimizer step:
 
@@ -216,7 +216,7 @@ optimizer.step()
 
 But because gradients have already been averaged across ranks, this ensures consistent weight updates across ranks. There’s no need for additional sync.
 
-### 3.7 Full Example Training Loop
+## 3.7 Full Example Training Loop
 
 Here is the key training loop:
 
@@ -237,7 +237,7 @@ for epoch in range(epochs):
 
 That’s it. The rest of the training pipeline is pure PyTorch. The only change is intercepting the gradient sync step before `optimizer.step()`.
 
-### 3.8 Pitfalls (Ask Me How I Know…)
+## 3.8 Pitfalls (Ask Me How I Know…)
 
 - Forgetting to divide reduced gradients by world size → effective learning rate scales with number of processes → divergence.
 - Using too small bucket sizes → too many AllReduce calls → kills performance.
